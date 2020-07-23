@@ -5,6 +5,7 @@ local GoalXPDataStore = DataStoreService:GetDataStore("GoalXP")
 local LevelDataStore = DataStoreService:GetDataStore("Level")
 local LevelUp = ReplicatedStorage:WaitForChild("LevelUp")
 local GivePet = ReplicatedStorage:WaitForChild("GivePet")
+local PetConfig = require(script.Parent.PetConfig)
 
 game.Players.PlayerAdded:Connect(function(Player)
 	local Data = Instance.new("Folder", Player)
@@ -13,6 +14,10 @@ game.Players.PlayerAdded:Connect(function(Player)
 	local CurrentEgg = Instance.new("StringValue", Data)
 	CurrentEgg.Name = "CurrentEgg"
 	CurrentEgg.Value = "StarterEgg"
+
+	local CurrentEgg = Instance.new("StringValue", Data)
+	CurrentEgg.Name = "CurrentPet"
+	CurrentEgg.Value = ""
 
 	local CurrentEgg = Instance.new("StringValue", Data)
 	CurrentEgg.Name = "Pets"
@@ -91,7 +96,7 @@ game.Players.PlayerRemoving:Connect(function(Player)
 end)
 
 function GivePets(Level)
-	return "Dog"
+	return PetConfig.DeterminePet()
 end
 
 LevelUp.OnServerEvent:Connect(function(Player)

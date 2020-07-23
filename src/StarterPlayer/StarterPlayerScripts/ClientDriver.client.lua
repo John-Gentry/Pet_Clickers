@@ -33,14 +33,19 @@ UserInputService.InputBegan:Connect(function(input)
         require(EggProperties).HitEgg()
     end
 end)
+
+--[[ Below needs to be changed so that it's mainly handled by the PetHandler module *]]
 GivePet.OnClientEvent:Connect(function(Pet)
+    local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     if PlayerView.Value == false then
+        CurrentPet.Value = Pet
         local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
         local Camera = game.Workspace.CurrentCamera
         local Location = game.ReplicatedStorage:FindFirstChild("StarterEgg").Position
         local Pet = game.ReplicatedStorage:WaitForChild("Pets"):FindFirstChild(Pet):Clone()
+        a = Pet:FindFirstChild("Rotation").Value
         Pet.HitBox.Position = Location
-        Pet.HitBox.CFrame = CFrame.new(Pet.HitBox.Position,Camera.CFrame.p)
+        Pet.HitBox.CFrame = CFrame.new(Pet.HitBox.Position,Camera.CFrame.p)*CFrame.Angles(math.rad(a.x), a.y, a.z)
         Pet.Parent = game.Workspace.Pets
         require(ChangeGui).PromptPet(Pet.Name)
         require(ChangeGui).OpenWalkPetGui()
@@ -53,13 +58,13 @@ GivePet.OnClientEvent:Connect(function(Pet)
                 require(InitialStart).Egg("StarterEgg")
             end
         end)
-        print(Pet)
+        --print(Pet)
     end
 end)
 
 MainGui.WalkPetButton.MouseButton1Click:Connect(function()
     print("Clicking")
-    local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentEgg")
+    local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     local BackToPlayerCamera = game.ReplicatedStorage:WaitForChild("BackToPlayerCamera")
     TriggerPlayerPet = ReplicatedStorage:WaitForChild("TriggerPlayerPet")
     BackToPlayerCamera:FireServer()
