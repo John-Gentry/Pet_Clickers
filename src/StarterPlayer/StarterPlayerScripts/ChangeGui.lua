@@ -1,5 +1,6 @@
 ChangeGui = {}
-
+local MainX = 164.975
+local MainZ = -428.711
 local Player = game.Players.LocalPlayer
 local MainGui = Player.PlayerGui:WaitForChild("MainGui")
 local ReplicatedStorage = game.ReplicatedStorage
@@ -24,8 +25,8 @@ function ChangeGui.DetermineLevel(XP,GoalXP,Level)
         Playing.Value = false
         local egg = game.Workspace:WaitForChild("StarterEgg")
         local Up = TweenInfo.new(1,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
-
-        x=TweenService:Create(egg,Up,{CFrame = CFrame.new(156, 40, -400)})
+        
+        x=TweenService:Create(egg,Up,{CFrame = CFrame.new(MainX, 40, MainZ)})
         x:Play()
         x.Completed:Wait()
         if egg ~= nil and egg:FindFirstChild("PointLight")~= nil then
@@ -40,30 +41,30 @@ function ChangeGui.DetermineLevel(XP,GoalXP,Level)
 end
 
 function ChangeGui.PromptPet(Pet)
-    PetText = MainGui:FindFirstChild("PetPrompt")
+    PetText = MainGui:FindFirstChild("Prompt")
     PetText.Text = "A new pet "..tostring(Pet).."!"
     PetText.Visible = true
 end
 
 function ChangeGui.ClosePromptPet()
-    PetText = MainGui:FindFirstChild("PetPrompt")
+    PetText = MainGui:FindFirstChild("Prompt")
     PetText.Visible = false
     wait(2.5)
     if PlayerView.Value == false then
-        MainGui:FindFirstChild("ContinuePrompt").Visible = true
+        MainGui:FindFirstChild("Cloud").Visible = true
+        MainGui:FindFirstChild("Cloud").Text.Text = "Click me to continue!"
     end
 end
 
 function ChangeGui.CloseContinuePrompt()
-    MainGui:FindFirstChild("ContinuePrompt").Visible = false
+    MainGui:FindFirstChild("Cloud").Visible = false
 end
 function ChangeGui.TweenLevelBar(Bar,XP,GoalXP)
-    local x = (XP.Value/GoalXP.Value)*0.2
-    Bar:TweenSize(UDim2.new(x, 0, 0.02, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.3,true, callback)
+    local x = (XP.Value/GoalXP.Value)*1
+    Bar:TweenSize(UDim2.new(x, 0, 0.25, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.3,true, callback)
 end
 
 function ChangeGui.OpenWalkPetGui()
-    MainGui:FindFirstChild("WalkPetPicture").Visible = true
     MainGui:FindFirstChild("WalkPetButton").Visible = true
 end
 

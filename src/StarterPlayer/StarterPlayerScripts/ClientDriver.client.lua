@@ -11,9 +11,9 @@ local RunService = game:GetService("RunService")
 local Player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local MainGui = Player.PlayerGui:WaitForChild("MainGui")
-local XPText = Player.PlayerGui:WaitForChild("MainGui").XPText
-local LevelText = Player.PlayerGui:WaitForChild("MainGui").LevelText
-local Bar = Player.PlayerGui:WaitForChild("MainGui").LevelBar
+local XPText = Player.PlayerGui:WaitForChild("MainGui").Level.XPBarBackground.TextLabel
+local LevelText = Player.PlayerGui:WaitForChild("MainGui").Level.BoosterButton
+local Bar = Player.PlayerGui:WaitForChild("MainGui").Level.XPBar
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
 
 UserInputService.InputBegan:Connect(function(input)
@@ -24,6 +24,7 @@ UserInputService.InputBegan:Connect(function(input)
     
     
     if input.UserInputType == Enum.UserInputType.MouseButton1 and Playing.Value == true and PlayerView.Value == false then
+        print("click")
         XP.Value = XP.Value + 1
         XPText.Text = tostring(XP.Value).."/"..tostring(GoalXP.Value)
         LevelText.Text = "Level: "..tostring(Level.Value)
@@ -41,7 +42,7 @@ GivePet.OnClientEvent:Connect(function(Pet)
         CurrentPet.Value = Pet
         local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
         local Camera = game.Workspace.CurrentCamera
-        local Location = game.ReplicatedStorage:FindFirstChild("StarterEgg").Position
+        local Location = Vector3.new(164.975, 37.54, -428.711)
         local Pet = game.ReplicatedStorage:WaitForChild("Pets"):FindFirstChild(Pet):Clone()
         a = Pet:FindFirstChild("Rotation").Value
         Pet.HitBox.Position = Location
