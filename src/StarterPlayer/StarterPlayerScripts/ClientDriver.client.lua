@@ -14,24 +14,30 @@ local MainGui = Player.PlayerGui:WaitForChild("MainGui")
 local XPText = Player.PlayerGui:WaitForChild("MainGui").Level.XPBarBackground.TextLabel
 local LevelText = Player.PlayerGui:WaitForChild("MainGui").Level.BoosterButton
 local Bar = Player.PlayerGui:WaitForChild("MainGui").Level.XPBar
-local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
-local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
+
+local Data = Player:FindFirstChild("Data")
+
+local PlayerView = Data:WaitForChild("PlayerView")
+local Playing = Data:WaitForChild("Playing")
+local GetAmount = ReplicatedStorage:WaitForChild("GetAmount")
+Playing.Value = true
 UserInputService.InputBegan:Connect(function(input)
-    local XP = Player:FindFirstChild("Data"):WaitForChild("XP")
-    local GoalXP = Player:FindFirstChild("Data"):WaitForChild("GoalXP")
-    local Level = Player:FindFirstChild("Data"):WaitForChild("Level")
-    local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
+    local XP = Data:WaitForChild("XP")
+    local GoalXP = Data:WaitForChild("GoalXP")
+    local Level = Data:WaitForChild("Level")
+    local Playing = Data:WaitForChild("Playing")
     
     
     if input.UserInputType == Enum.UserInputType.MouseButton1 and Playing.Value == true and PlayerView.Value == false then
-        print("click")
-        XP.Value = XP.Value + 1
+        Amount=GetAmount:InvokeServer(Level.Value)
+        XP.Value = XP.Value + Amount
         XPText.Text = tostring(XP.Value).."/"..tostring(GoalXP.Value)
         LevelText.Text = "Level: "..tostring(Level.Value)
-        spawn(function()require(ChangeGui).AddGold(1)end)
+        spawn(function()require(ChangeGui).AddXP(Amount)end) --change
         require(ChangeGui).DetermineLevel(XP,GoalXP,Level)
         require(ChangeGui).TweenLevelBar(Bar,XP,GoalXP)
         require(EggProperties).HitEgg()
+
     end
 end)
 
@@ -59,14 +65,12 @@ GivePet.OnClientEvent:Connect(function(Pet)
                 require(InitialStart).Egg("StarterEgg")
             end
         end)
-        --print(Pet)
     end
 end)
 
 MainGui.WalkPetButton.MouseButton1Click:Connect(function()
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     if MainGui.WalkPetButton.Text == "Walk your pet!" and (Playing.Value == true or PlayerView.Value == false) then
-        print("Clicking")
         local BackToPlayerCamera = game.ReplicatedStorage:WaitForChild("BackToPlayerCamera")
         Playing.Value = false
         BackToPlayerCamera:FireServer()

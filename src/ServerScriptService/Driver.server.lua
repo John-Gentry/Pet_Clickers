@@ -7,7 +7,7 @@ TriggerPlayerPet = ReplicatedStorage:WaitForChild("TriggerPlayerPet")
 RemovePetInGame = ReplicatedStorage:WaitForChild("RemovePetInGame")
 PetConfig = require(script.Parent.PetConfig)
 --DeterminePet = PetConfig.DeterminePet
-
+GetAmount = ReplicatedStorage:WaitForChild("GetAmount")
 Players.PlayerAdded:Connect(function(Player)
     CameraEvent:FireClient(Player,true)
 end)
@@ -52,3 +52,11 @@ RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)
     Pet:Destroy()
     CameraEvent:FireClient(Player,true)
 end)
+
+GetAmount.OnServerInvoke=function(Player,Level)
+    --local Level = Player:FindFirstChild("Data"):FindFirstChild("Level")
+    print(Level)
+    local Amount = tonumber(Level)*1.2
+
+    return Amount
+end
