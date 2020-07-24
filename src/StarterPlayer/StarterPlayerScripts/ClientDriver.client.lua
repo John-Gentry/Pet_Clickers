@@ -15,7 +15,7 @@ local XPText = Player.PlayerGui:WaitForChild("MainGui").Level.XPBarBackground.Te
 local LevelText = Player.PlayerGui:WaitForChild("MainGui").Level.BoosterButton
 local Bar = Player.PlayerGui:WaitForChild("MainGui").Level.XPBar
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
-
+local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
 UserInputService.InputBegan:Connect(function(input)
     local XP = Player:FindFirstChild("Data"):WaitForChild("XP")
     local GoalXP = Player:FindFirstChild("Data"):WaitForChild("GoalXP")
@@ -46,7 +46,7 @@ GivePet.OnClientEvent:Connect(function(Pet)
         local Pet = game.ReplicatedStorage:WaitForChild("Pets"):FindFirstChild(Pet):Clone()
         a = Pet:FindFirstChild("Rotation").Value
         Pet.HitBox.Position = Location
-        Pet.HitBox.CFrame = CFrame.new(Pet.HitBox.Position,Camera.CFrame.p)*CFrame.Angles(math.rad(a.x), a.y, a.z)
+        Pet.HitBox.CFrame = CFrame.new(Pet.HitBox.Position,Camera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z))
         Pet.Parent = game.Workspace.Pets
         require(ChangeGui).PromptPet(Pet.Name)
         require(ChangeGui).OpenWalkPetGui()
@@ -64,10 +64,22 @@ GivePet.OnClientEvent:Connect(function(Pet)
 end)
 
 MainGui.WalkPetButton.MouseButton1Click:Connect(function()
-    print("Clicking")
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
-    local BackToPlayerCamera = game.ReplicatedStorage:WaitForChild("BackToPlayerCamera")
-    TriggerPlayerPet = ReplicatedStorage:WaitForChild("TriggerPlayerPet")
-    BackToPlayerCamera:FireServer()
-    TriggerPlayerPet:FireServer(CurrentPet.Value)
+    if MainGui.WalkPetButton.Text == "Walk your pet!" and (Playing.Value == true or PlayerView.Value == false) then
+        print("Clicking")
+        local BackToPlayerCamera = game.ReplicatedStorage:WaitForChild("BackToPlayerCamera")
+        Playing.Value = false
+        BackToPlayerCamera:FireServer()
+        TriggerPlayerPet = ReplicatedStorage:WaitForChild("TriggerPlayerPet")
+        MainGui.WalkPetButton.Text = "Hatch an egg!"
+        TriggerPlayerPet:FireServer(CurrentPet.Value)
+        require(InitialStart).RemoveEgg("StarterEgg")
+    elseif MainGui.WalkPetButton.Text == "Hatch an egg!" and Playing.Value == false then
+        ReplicatedStorage.RemovePetInGame:FireServer(CurrentPet.value.."_"..Player.Name)
+        Playing.Value = true
+        PlayerView.Value = false
+        require(InitialStart).Egg("StarterEgg")
+        MainGui.WalkPetButton.Text = "Walk your pet!"
+
+    end
 end)

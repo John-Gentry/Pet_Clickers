@@ -14,4 +14,10 @@ function Initialize.Egg(Type)
     end
 end
 
+function Initialize.RemoveEgg(Type)
+    local Egg = game.Workspace:FindFirstChild(Type)
+    if Egg ~= nil then
+        Egg:Destroy()
+    end
+end
 return Initialize

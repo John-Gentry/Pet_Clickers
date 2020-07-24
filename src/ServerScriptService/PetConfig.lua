@@ -22,7 +22,8 @@ function PetConfig.DeterminePet()
     local RarityList={
         [0.5] = "Dog",
         [0.35] = "Cat",
-        [0.15] = "Chicken"
+        [0.10] = "Chicken",
+        [0.05] = "Penguin"
     }
     local Keys = {}
     local index = 1

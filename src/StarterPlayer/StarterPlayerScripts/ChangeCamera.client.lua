@@ -8,12 +8,17 @@ local Offset = CFrame.new(0,0,10)
 local active = true
 
 CameraEvent.OnClientEvent:Connect(function(bool)
+    if game.Workspace:FindFirstChild("StarterEgg") == nil then
+        local egg = ReplicatedStorage:FindFirstChild("StarterEgg"):Clone()
+        egg.Parent = game.Workspace
+        egg.CFrame = Point
+    end
     local Camera = Workspace.CurrentCamera
     Camera.CameraType = "Scriptable"
     Camera.Focus = Point
     Camera.CFrame = Point
     Camera.CameraSubject = game.Workspace:WaitForChild("StarterEgg")
-    --active = bool
+    active = bool
     while active do
         for i = 1,3600 do
             if not active then break end
