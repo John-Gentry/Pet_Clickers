@@ -1,6 +1,7 @@
 ChangeGui = {}
-local MainX = 164.975
-local MainZ = -428.711
+SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
+local MainX = SpawnEggLocation.X
+local MainZ = SpawnEggLocation.Z
 local Player = game.Players.LocalPlayer
 local MainGui = Player.PlayerGui:WaitForChild("MainGui")
 local ReplicatedStorage = game.ReplicatedStorage
@@ -26,7 +27,7 @@ function ChangeGui.DetermineLevel(XP,GoalXP,Level)
         local egg = game.Workspace:WaitForChild("StarterEgg")
         local Up = TweenInfo.new(1,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
         
-        x=TweenService:Create(egg,Up,{CFrame = CFrame.new(MainX, 40, MainZ)})
+        x=TweenService:Create(egg,Up,{CFrame = CFrame.new(MainX, SpawnEggLocation.Y+5, MainZ)})
         x:Play()
         x.Completed:Wait()
         if egg ~= nil and egg:FindFirstChild("PointLight")~= nil then

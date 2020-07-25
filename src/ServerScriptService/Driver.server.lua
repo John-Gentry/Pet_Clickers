@@ -31,20 +31,8 @@ TriggerPlayerPet.OnServerEvent:Connect(function(Player,Pet)
             v.CanCollide = false
         end
     end
-    --[[ Needs to be added into a separate module *]]
-    spawn(function()
-        local offset = Vector3.new(0,0.05,0.05)
-        while Pet ~= nil do
-            wait()
-            GameRotation = Pet:WaitForChild("GameRotation")
-            PlayerPos = Player.Character:WaitForChild("HumanoidRootPart")
-            PlayerHead = Player.Character:WaitForChild("Head")
-            Pet:FindFirstChild("HitBox").Anchored = true
-            Pet:FindFirstChild("HitBox").CFrame = PlayerPos.CFrame*CFrame.new(5,-1.8,4)*CFrame.Angles(math.rad(GameRotation.Value.X), math.rad(GameRotation.Value.Y), math.rad(GameRotation.Value.Z))
-            Pet:FindFirstChild("HitBox").RotVelocity = Vector3.new(0,0,0)
-            Pet:FindFirstChild("HitBox").Velocity = Vector3.new(0,0,0)
-        end
-    end)
+
+    PetConfig.ThreadPet(Pet,Player)
 end)
 
 RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)
@@ -55,7 +43,6 @@ end)
 
 GetAmount.OnServerInvoke=function(Player,Level)
     --local Level = Player:FindFirstChild("Data"):FindFirstChild("Level")
-    print(Level)
     local Amount = tonumber(Level)*1.2
 
     return Amount

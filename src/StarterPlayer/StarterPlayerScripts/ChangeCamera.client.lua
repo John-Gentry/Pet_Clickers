@@ -1,9 +1,10 @@
 ReplicatedStorage = game.ReplicatedStorage
 CameraEvent = ReplicatedStorage:WaitForChild("CameraMode")
 BackToPlayerCamera = ReplicatedStorage:WaitForChild("BackToPlayerCamera")
+SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
 local Player = game.Players.LocalPlayer
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
-local Point = CFrame.new(164.975, 37.54, -428.711)
+local Point = CFrame.new(SpawnEggLocation.X,SpawnEggLocation.Y,SpawnEggLocation.Z)
 local Offset = CFrame.new(0,0,10)
 local active = true
 

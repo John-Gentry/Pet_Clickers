@@ -1,5 +1,5 @@
 local Initialize = {}
-
+SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
 
 local ReplicatedStorage = game.ReplicatedStorage
 local Player = game.Players.LocalPlayer
@@ -8,7 +8,7 @@ function Initialize.Egg(Type)
     if Playing.Value == false and game.Workspace.Pets:FindFirstChildOfClass("Model") == nil and game.Workspace:FindFirstChild(Type) == nil then
         Egg = ReplicatedStorage:FindFirstChild(Type):Clone()
         Egg.Parent = game.Workspace
-        Egg.Position = Vector3.new(164.975, 37.54, -428.711)
+        Egg.Position = SpawnEggLocation
         Playing.Value = true
         return "done"
     end
