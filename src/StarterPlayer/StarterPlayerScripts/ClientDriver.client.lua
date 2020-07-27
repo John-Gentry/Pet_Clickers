@@ -28,17 +28,15 @@ local Bar = Player.PlayerGui:WaitForChild("MainGui").Level.XPBar
 
 
 local PlayerView = Data:WaitForChild("PlayerView")
-
+local Mouse = Player:GetMouse()
 local GetAmount = ReplicatedStorage:WaitForChild("GetAmount")
 
-UserInputService.InputBegan:Connect(function(input)
+function OnPlayerClick()
     local XP = Data:WaitForChild("XP")
     local GoalXP = Data:WaitForChild("GoalXP")
     local Level = Data:WaitForChild("Level")
     local Playing = Data:WaitForChild("Playing")
-    
-
-    if input.UserInputType == Enum.UserInputType.MouseButton1 and Playing.Value == true and PlayerView.Value == false then
+    if Playing.Value == true and PlayerView.Value == false then
         print("Clicking")
         Amount=GetAmount:InvokeServer(Level.Value)
         XP.Value = XP.Value + Amount
@@ -50,7 +48,14 @@ UserInputService.InputBegan:Connect(function(input)
         require(EggProperties).HitEgg()
 
     end
-end)
+end
+
+Mouse.Button1Down:Connect(OnPlayerClick)
+
+if UserInputService.TouchEnabled then
+    UserInputService.TouchTap:Connect(OnPlayerClick)
+end
+
 
 --[[ Below needs to be changed so that it's mainly handled by the PetHandler module *]]
 GivePet.OnClientEvent:Connect(function(Pet)
@@ -78,6 +83,7 @@ GivePet.OnClientEvent:Connect(function(Pet)
         end)
     end
 end)
+--[[ Will be the primary function for when the player clicks the *]]
 
 --[[ Activates when player clicks the "walk pet" button. Also when they click "hatch egg" *]]
 
