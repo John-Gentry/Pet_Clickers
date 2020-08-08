@@ -36,21 +36,20 @@ function PetConfig.DeterminePet()
     selection = selectpet(Keys)
     return RarityList[Keys[selection]]
 end
-
 --[[ Puts pet movement into a thread, so it runs independently of the script itself.
 This will be changed into some sort of tween very soon.*]]
 function PetConfig.ThreadPet(Pet,Player)
     local MovingConfig = TweenInfo.new(0.5,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0) --[[ Config for moving the pet in a linear direction (Better than updating every render) *]]
     spawn(function()
         local offset = Vector3.new(0,0.05,0.05)
-        while Pet ~= nil do
+        while Pet ~= nil and Player.Character ~= nil do
             wait(0.5)
             GameRotation = Pet:WaitForChild("GameRotation")
             PlayerPos = Player.Character:WaitForChild("HumanoidRootPart")
             Pet:FindFirstChild("HitBox").Anchored = true
             Distance = (PlayerPos.Position-Pet:FindFirstChild("HitBox").Position).Magnitude
-            print(Player.Character)
-            print(Distance)
+--[[             print(Player.Character)
+            print(Distance) ]]
 
             function notjumping()
                 if Player.Character:FindFirstChild("Humanoid").Jump == true then
@@ -75,6 +74,7 @@ function PetConfig.ThreadPet(Pet,Player)
                 end) *]]
             end
         end
+
         print(Pet)
     end)
 end

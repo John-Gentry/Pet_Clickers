@@ -1,13 +1,14 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 ReplicatedStorage = game.ReplicatedStorage
-CameraEvent = ReplicatedStorage:WaitForChild("CameraMode")
-BackToPlayerCamera = ReplicatedStorage:WaitForChild("BackToPlayerCamera")
-TriggerPlayerPet = ReplicatedStorage:WaitForChild("TriggerPlayerPet")
-RemovePetInGame = ReplicatedStorage:WaitForChild("RemovePetInGame")
+CameraEvent = ReplicatedStorage.RemoteEvents:WaitForChild("CameraMode")
+BackToPlayerCamera = ReplicatedStorage.RemoteEvents:WaitForChild("BackToPlayerCamera")
+TriggerPlayerPet = ReplicatedStorage.RemoteEvents:WaitForChild("TriggerPlayerPet")
+RemovePetInGame = ReplicatedStorage.RemoteEvents:WaitForChild("RemovePetInGame")
 PetConfig = require(script.Parent.PetConfig)
 --DeterminePet = PetConfig.DeterminePet
-GetAmount = ReplicatedStorage:WaitForChild("GetAmount")
+GetAmount = ReplicatedStorage.RemoteFunctions:WaitForChild("GetAmount")
+local Database = require(ReplicatedStorage.Modules.Data)
 Players.PlayerAdded:Connect(function(Player)
     CameraEvent:FireClient(Player,true)
 end)
@@ -42,8 +43,11 @@ RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)
 end)
 
 GetAmount.OnServerInvoke=function(Player,Level)
-    --local Level = Player:FindFirstChild("Data"):FindFirstChild("Level")
+    local PlayerData = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
+    local Level = tonumber(PlayerData[3])
+    
     local Amount = tonumber(Level)*1.2
 
     return Amount
 end
+

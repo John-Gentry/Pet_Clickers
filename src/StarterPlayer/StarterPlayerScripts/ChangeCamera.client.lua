@@ -1,24 +1,20 @@
 ReplicatedStorage = game.ReplicatedStorage
-CameraEvent = ReplicatedStorage:WaitForChild("CameraMode")
-BackToPlayerCamera = ReplicatedStorage:WaitForChild("BackToPlayerCamera")
+CameraEvent = ReplicatedStorage.RemoteEvents:WaitForChild("CameraMode")
+BackToPlayerCamera = ReplicatedStorage.RemoteEvents:WaitForChild("BackToPlayerCamera")
 SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
 local Player = game.Players.LocalPlayer
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
 local Point = CFrame.new(SpawnEggLocation.X,SpawnEggLocation.Y,SpawnEggLocation.Z)
 local Offset = CFrame.new(0,0,10)
 local active = true
+local ClientObjects = game.Workspace.ClientObjects
 
 CameraEvent.OnClientEvent:Connect(function(bool)
-    if game.Workspace:FindFirstChild("StarterEgg") == nil then
-        local egg = ReplicatedStorage:FindFirstChild("StarterEgg"):Clone()
-        egg.Parent = game.Workspace
-        egg.CFrame = Point
-    end
     local Camera = Workspace.CurrentCamera
     Camera.CameraType = "Scriptable"
     Camera.Focus = Point
     Camera.CFrame = Point
-    Camera.CameraSubject = game.Workspace:WaitForChild("StarterEgg")
+    Camera.CameraSubject = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation")
     active = bool
     while active do
         for i = 1,3600 do

@@ -4,7 +4,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
  
 -- Require module
-local AudioPlayerModule = require(ReplicatedStorage:WaitForChild("AudioPlayer"))
+local AudioPlayerModule = require(ReplicatedStorage.Modules:WaitForChild("AudioPlayer"))
  
 -- Preload music tracks
 AudioPlayerModule.preloadAudio({

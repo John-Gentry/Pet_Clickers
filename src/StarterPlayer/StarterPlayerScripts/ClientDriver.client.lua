@@ -1,52 +1,74 @@
---[[ Initial game objects added *]]
-local UserInputService = game:GetService("UserInputService")
 local Player = game.Players.LocalPlayer
 Character = Player.CharacterAdded:Wait() or Player.Character
+
+--[[ Services ]]
+local UserInputService = game:GetService("UserInputService")
+local R = game:GetService("ReplicatedStorage")
+
+--[[ Required modules ]]
+local Modules = R.Modules
+
+local EggModule = require(Modules:WaitForChild("Egg"))
+local PetModule = require(Modules:WaitForChild("Pet"))
+local PlayerHandler = require(Modules:WaitForChild("PlayerHandler"))
+local EggProperties = require(Modules:WaitForChild("EggProperties"))
+local ChangeGui = require(Modules:WaitForChild("ChangeGui"))
+local Database = require(R.Modules.Data)
+
+--[[ Remote Events ]]
+local GivePet = R.RemoteEvents:WaitForChild("GivePet")
+local BackToPlayerCamera = R.RemoteEvents:WaitForChild("BackToPlayerCamera")
+local TriggerPlayerPet = R.RemoteEvents:WaitForChild("TriggerPlayerPet")
+local EraseData = R.RemoteEvents:WaitForChild("EraseData")
+
+--[[ Remote Functions ]]
+local GetAmount = R.RemoteFunctions:WaitForChild("GetAmount")
+
+--[[ Gui variables ]]
+local PlayerGui = Player.PlayerGui
+local MainGui = PlayerGui:WaitForChild("MainGui")
+local XPText = MainGui.Level.XPBarBackground.TextLabel
+local LevelText = MainGui.Level.BoosterButton
+local Bar = MainGui.Level.XPBar
+
+--[[ Player data ]]
 local Data = Player:FindFirstChild("Data")
 local Playing = Data:WaitForChild("Playing")
-
-Playing.Value = true
-InitialStart = script.Parent:WaitForChild("InitialStart")
-
-
-local PlayerHandler = require(script.Parent.PlayerHandler)
-require(InitialStart).Egg("StarterEgg") --Starter Egg for the beginning
-SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
-PlayerHandler.MakePlayerInvisible(Player)
-
-EggProperties = script.Parent:WaitForChild("EggProperties")
-ChangeGui = script.Parent:WaitForChild("ChangeGui")
-GivePet = game.ReplicatedStorage.GivePet
-ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-
-
-local MainGui = Player.PlayerGui:WaitForChild("MainGui")
-local XPText = Player.PlayerGui:WaitForChild("MainGui").Level.XPBarBackground.TextLabel
-local LevelText = Player.PlayerGui:WaitForChild("MainGui").Level.BoosterButton
-local Bar = Player.PlayerGui:WaitForChild("MainGui").Level.XPBar
-
-
 local PlayerView = Data:WaitForChild("PlayerView")
+
+--[[ Various Objects ]]
+local ClientObjects = game.Workspace.ClientObjects
+local EggPosition = EggModule.GetPosition()
+local Egg = EggModule.new("StarterEgg",EggPosition)
+local Pet = nil
 local Mouse = Player:GetMouse()
-local GetAmount = ReplicatedStorage:WaitForChild("GetAmount")
+
+--[[ Initial startup ]]
+PlayerHandler.MakePlayerInvisible(Player)
+Playing.Value = true
 
 function OnPlayerClick()
-    local XP = Data:WaitForChild("XP")
-    local GoalXP = Data:WaitForChild("GoalXP")
-    local Level = Data:WaitForChild("Level")
+    local PlayerData = Data:WaitForChild("PlayerData")
+    local PlayerTable = Database.Pull(PlayerData.Value)
+    local XP = tonumber(PlayerTable[1])
+    local GoalXP = tonumber(PlayerTable[2])
+    local Level = tonumber(PlayerTable[3])
     local Playing = Data:WaitForChild("Playing")
-    if Playing.Value == true and PlayerView.Value == false then
-        print("Clicking")
-        Amount=GetAmount:InvokeServer(Level.Value)
-        XP.Value = XP.Value + Amount
-        XPText.Text = tostring(XP.Value).."/"..tostring(GoalXP.Value)
-        LevelText.Text = "Level: "..tostring(Level.Value)
-        spawn(function()require(ChangeGui).AddXP(Amount)end) --change
-        require(ChangeGui).DetermineLevel(XP,GoalXP,Level)
-        require(ChangeGui).TweenLevelBar(Bar,XP,GoalXP)
-        require(EggProperties).HitEgg()
 
+    if Playing.Value == true and PlayerView.Value == false then
+        Amount=GetAmount:InvokeServer(Level)
+        PlayerTable[1] = XP + Amount
+        PlayerData.Value = Database.Convert(PlayerTable)
+        if XP <= GoalXP then
+            XPText.Text = tostring(XP).."/"..tostring(GoalXP)
+        else
+            XPText.Text = tostring(GoalXP).."/"..tostring(GoalXP)
+        end
+        LevelText.Text = "Level: "..tostring(Level)
+        spawn(function()ChangeGui.AddXP(Amount)end) --change
+        ChangeGui.DetermineLevel(XP,GoalXP,Level)
+        ChangeGui.TweenLevelBar(Bar,XP,GoalXP)
+        EggProperties.HitEgg()
     end
 end
 
@@ -56,55 +78,67 @@ if UserInputService.TouchEnabled then
     UserInputService.TouchTap:Connect(OnPlayerClick)
 end
 
-
 --[[ Below needs to be changed so that it's mainly handled by the PetHandler module *]]
 GivePet.OnClientEvent:Connect(function(Pet)
+    local Playing = Data:WaitForChild("Playing")
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     if PlayerView.Value == false then
         CurrentPet.Value = Pet
         local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
-        local Camera = game.Workspace.CurrentCamera
-        local Location = SpawnEggLocation --[[ Needs to be changed to a global position value *]]
-        local Pet = game.ReplicatedStorage:WaitForChild("Pets"):FindFirstChild(Pet):Clone()
-        a = Pet:FindFirstChild("Rotation").Value
-        Pet.HitBox.Position = Location
-        Pet.HitBox.CFrame = CFrame.new(Pet.HitBox.Position,Camera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z))
-        Pet.Parent = game.Workspace.Pets
-        require(ChangeGui).PromptPet(Pet.Name)
-        require(ChangeGui).OpenWalkPetGui()
-        wait(2)
-        require(ChangeGui).ClosePromptPet()
+        Pet = PetModule.new(CurrentPet.Value,EggPosition)
+        ChangeGui.PromptPet(Pet.Name)
         UserInputService.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 and Playing.Value == false and Pet ~= nil and PlayerView.Value == false then
-                Pet:Destroy()
-                require(ChangeGui).CloseContinuePrompt()
-                require(InitialStart).Egg("StarterEgg")
+            if input.UserInputType == Enum.UserInputType.MouseButton1 and Playing.Value == false and Pet ~= nil and PlayerView.Value == false and EggModule.Check("StarterEgg") then
+                PetModule:DestroyPets()
+                ChangeGui.CloseContinuePrompt()
+                EggModule.new("StarterEgg",EggPosition)
+                Playing.Value = true
             end
         end)
     end
 end)
---[[ Will be the primary function for when the player clicks the *]]
 
 --[[ Activates when player clicks the "walk pet" button. Also when they click "hatch egg" *]]
 
 MainGui.WalkPetButton.MouseButton1Click:Connect(function()
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     if MainGui.WalkPetButton.Text == "Walk your pet!" and (Playing.Value == true or PlayerView.Value == false) then
+        for _,v in ipairs(ClientObjects:GetChildren()) do v:Destroy() end
         PlayerHandler.MakePlayerVisible(Player)
-        local BackToPlayerCamera = game.ReplicatedStorage:WaitForChild("BackToPlayerCamera")
         Playing.Value = false
         BackToPlayerCamera:FireServer()
-        TriggerPlayerPet = ReplicatedStorage:WaitForChild("TriggerPlayerPet")
         MainGui.WalkPetButton.Text = "Hatch an egg!"
         TriggerPlayerPet:FireServer(CurrentPet.Value)
-        require(InitialStart).RemoveEgg("StarterEgg")
     elseif MainGui.WalkPetButton.Text == "Hatch an egg!" and Playing.Value == false then
-        ReplicatedStorage.RemovePetInGame:FireServer(CurrentPet.value.."_"..Player.Name)
+        R.RemoteEvents.RemovePetInGame:FireServer(CurrentPet.value.."_"..Player.Name)
         Playing.Value = true
         PlayerHandler.MakePlayerInvisible(Player)
         PlayerView.Value = false
-        require(InitialStart).Egg("StarterEgg")
+        EggModule.new("StarterEgg",EggPosition)
         MainGui.WalkPetButton.Text = "Walk your pet!"
-
     end
+end)
+
+--[[ Activates the inventory screen ]]
+
+MainGui.InventoryButton.MouseButton1Click:Connect(function()
+    if PlayerGui.Shop.Enabled == false and PlayerGui.Inventory.Enabled == false then
+        PlayerGui.Inventory.Enabled = true
+    elseif PlayerGui.Inventory.Enabled == true then
+        PlayerGui.Inventory.Enabled = false
+    end
+end)
+
+MainGui.ShopButton.MouseButton1Click:Connect(function()
+    if PlayerGui.Shop.Enabled == false and PlayerGui.Inventory.Enabled == false then
+        PlayerGui.Shop.Enabled = true
+    elseif PlayerGui.Shop.Enabled == true then
+        PlayerGui.Shop.Enabled = false
+    end
+end)
+
+--[[ debug button ]]
+
+MainGui.ResetStatsButton.MouseButton1Click:Connect(function()
+    EraseData:FireServer()
 end)
