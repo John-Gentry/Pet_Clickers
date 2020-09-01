@@ -24,10 +24,8 @@ end
 function PlayerHandler.MakePlayerVisible(Player)
     Character = Player.Character
     --HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-    print("Firing player visible function")
     for _,v in ipairs(Character:GetDescendants()) do
         if (v:IsA("Part") or v:IsA("MeshPart")) and v.Name ~= "HumanoidRootPart" then
-            print(v)
             v.Transparency = 0
             v.Anchored = false
             v.CanCollide = true

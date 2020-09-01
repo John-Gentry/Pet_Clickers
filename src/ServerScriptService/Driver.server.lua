@@ -1,13 +1,14 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 ReplicatedStorage = game.ReplicatedStorage
-CameraEvent = ReplicatedStorage:WaitForChild("CameraMode")
-BackToPlayerCamera = ReplicatedStorage:WaitForChild("BackToPlayerCamera")
-TriggerPlayerPet = ReplicatedStorage:WaitForChild("TriggerPlayerPet")
-RemovePetInGame = ReplicatedStorage:WaitForChild("RemovePetInGame")
+CameraEvent = ReplicatedStorage.RemoteEvents:WaitForChild("CameraMode")
+BackToPlayerCamera = ReplicatedStorage.RemoteEvents:WaitForChild("BackToPlayerCamera")
+TriggerPlayerPet = ReplicatedStorage.RemoteEvents:WaitForChild("TriggerPlayerPet")
+RemovePetInGame = ReplicatedStorage.RemoteEvents:WaitForChild("RemovePetInGame")
 PetConfig = require(script.Parent.PetConfig)
 --DeterminePet = PetConfig.DeterminePet
-GetAmount = ReplicatedStorage:WaitForChild("GetAmount")
+GetAmount = ReplicatedStorage.RemoteFunctions:WaitForChild("GetAmount")
+local Database = require(ReplicatedStorage.Modules.Data)
 Players.PlayerAdded:Connect(function(Player)
     CameraEvent:FireClient(Player,true)
 end)
@@ -23,6 +24,10 @@ end)
 end *]]
 
 TriggerPlayerPet.OnServerEvent:Connect(function(Player,Pet)
+    CurrentPets=game.Workspace.PlayerPets:GetChildren()
+    print(#CurrentPets)
+    for _,v in ipairs(CurrentPets) do v:Destroy() end
+
     Pet = ReplicatedStorage.Pets:FindFirstChild(Pet):Clone()
     Pet.Name = Pet.Name.."_"..Player.Name
     Pet.Parent = game.Workspace.PlayerPets
@@ -36,14 +41,32 @@ TriggerPlayerPet.OnServerEvent:Connect(function(Player,Pet)
 end)
 
 RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)
-    local Pet = game.Workspace.PlayerPets:FindFirstChild(PetName)
-    Pet:Destroy()
+    local Pet = game.Workspace.PlayerPets:GetChildren()
+    for _,v in pairs(Pet) do v:Destroy() end
     CameraEvent:FireClient(Player,true)
 end)
 
-GetAmount.OnServerInvoke=function(Player,Level)
-    --local Level = Player:FindFirstChild("Data"):FindFirstChild("Level")
-    local Amount = tonumber(Level)*1.2
-
-    return Amount
+GetAmount.OnServerInvoke=function(Player,Level,Data)
+    local PlayerData = Database.Pull(Data)
+    local PlayerDataString = Player:FindFirstChild("Data").PlayerData
+    local increment = 0
+    local LevelUp = false
+    if #PlayerData[4] > #PlayerData[5] then
+        table.insert(PlayerData[5],{1,0,10})
+    end
+    for i,v in pairs(PlayerData[5]) do
+        increment = increment+(((i*2)*PlayerData[5][i][1])/5)
+        PlayerData[5][i][2] = PlayerData[5][i][2]+(1/(i/2))
+        if PlayerData[5][i][2] >= PlayerData[5][i][3] then
+            PlayerData[5][i][1] = PlayerData[5][i][1]+1
+            PlayerData[5][i][2] = 0
+            PlayerData[5][i][3] = PlayerData[5][i][1]*20
+            LevelUp = true
+        end
+    end
+    local Level = tonumber(PlayerData[3])
+    increment = increment*tonumber(Level)
+    print(Database.Convert(PlayerData))
+    return {increment,Database.Convert(PlayerData),LevelUp}
 end
+

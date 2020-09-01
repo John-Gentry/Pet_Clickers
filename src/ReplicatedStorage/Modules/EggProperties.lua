@@ -1,5 +1,6 @@
 EggProperties = {}
 SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
+local ClientObjects = game.Workspace.ClientObjects
 local TweenService = game:GetService("TweenService")
 local MainX = SpawnEggLocation.X
 local MainZ = SpawnEggLocation.Z
@@ -28,7 +29,7 @@ end
 function EggProperties.HitEgg()
     if game.Players.LocalPlayer.Data.Toggle.Value == false then
         game.Players.LocalPlayer.Data.Toggle.Value = true
-        local Egg = game.Workspace:WaitForChild(game.Players.LocalPlayer.Data.CurrentEgg.Value,0.05)
+        local Egg = ClientObjects:WaitForChild(game.Players.LocalPlayer.Data.CurrentEgg.Value)
         if Egg ~= nil then
             local Pos = Egg.CFrame
             randomdirection(Egg)
@@ -37,4 +38,11 @@ function EggProperties.HitEgg()
     end
 end
 
+--[[ function EggProperties.DetermineXPClicked()
+    local PlayerDataString = game.Players.LocalPlayer:FindFirstChild("Data").PlayerData
+    local ExtractedData = Data.Pull(PlayerDataString.Value)
+    local XP = 
+    return XP
+end
+ ]]
 return EggProperties
