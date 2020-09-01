@@ -9,6 +9,7 @@ local EraseData = ReplicatedStorage.RemoteEvents:WaitForChild("EraseData")
 local GivePet = ReplicatedStorage.RemoteEvents:WaitForChild("GivePet")
 local PetConfig = require(script.Parent.PetConfig)
 Database = require(ReplicatedStorage.Modules.Data)
+
 game.Players.PlayerAdded:Connect(function(Player)
 	local DataTable = {}
 	local LevelGui = Player:WaitForChild("PlayerGui"):WaitForChild("MainGui").Level
@@ -24,7 +25,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 	--[[ Current pet ]]
 	local CurrentEgg = Instance.new("StringValue", Data)
 	CurrentEgg.Name = "CurrentPet"
-	CurrentEgg.Value = ""
+	CurrentEgg.Value = "Dog"
 
 	--[[ Will become a variable that stores all of the player pets in a list. Format: Pet1,Pet2,Pet3,Pet4 ]]
 	local Pets = Instance.new("StringValue", Data)
@@ -51,7 +52,9 @@ game.Players.PlayerAdded:Connect(function(Player)
 	table.insert(DataTable,0)
 	table.insert(DataTable,20)
 	table.insert(DataTable,1)
-	table.insert(DataTable,{})
+	table.insert(DataTable,{"Dog"})
+	table.insert(DataTable,{{1,0,20}})
+	table.insert(DataTable,"Dog")
 	local PlayerData = Instance.new("StringValue", Data)
 	PlayerData.Name = "PlayerData"
 	PlayerData.Value = Database.Convert(DataTable)
@@ -73,10 +76,10 @@ end)
 
 --[[ Save player data on remove (redundant until game release) ]]
 game.Players.PlayerRemoving:Connect(function(Player)
-    local PlayerData = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
+    local PlayerData = Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value
 	
 	local success, err = pcall(function()
-		XPDataStore:SetAsync(Player,PlayerData)
+		PlayerDataStore:SetAsync(Player,PlayerData)
 	end)
 	if success then
 		print("Player data saved.")
@@ -85,25 +88,61 @@ game.Players.PlayerRemoving:Connect(function(Player)
 	end
 end)
 
-function GivePets(Level)
-	return PetConfig.DeterminePet()
+function isInTable(tableValue, toFind)
+	local found = false
+	for _,v in pairs(tableValue) do
+		if v==toFind then
+			found = true
+            break;
+		end
+	end
+	return found
+end
+
+function GivePets(Level,Player)
+	local pet = PetConfig.DeterminePet()
+	local PlayerData = Player:FindFirstChild("Data"):WaitForChild("PlayerData")
+	local PlayerTable = Database.Pull(PlayerData.Value)
+	if isInTable(PlayerTable[4],pet) == false then
+		table.insert(PlayerTable[4],pet)
+	end
+	PlayerData.Value = Database.Convert(PlayerTable)
+	return pet
 end
 
 --[[ Player level up ]]
-LevelUp.OnServerEvent:Connect(function(Player)
-	local PlayerData = Player:FindFirstChild("Data"):WaitForChild("PlayerData")
+LevelUp.OnServerEvent:Connect(function(Player,CurrentPet,Data)
+	local PlayerData = Data
 	local LevelGui = Player:WaitForChild("PlayerGui"):WaitForChild("MainGui").Level
-    local PlayerTable = Database.Pull(PlayerData.Value)
+	local PlayerTable = Database.Pull(PlayerData)
     local XP = tonumber(PlayerTable[1])
     local GoalXP = tonumber(PlayerTable[2])
 	local Level = tonumber(PlayerTable[3])
 	PlayerTable[1]=0
 	PlayerTable[2]=(GoalXP*Level)
 	PlayerTable[3]=Level+1
-	PlayerData.Value = Database.Convert(PlayerTable)
+
+ 	for i,v in pairs(PlayerTable[4]) do
+		if v == CurrentPet then
+			if PlayerTable[5][i] == nil then
+				table.insert(PlayerTable[5],{1,0,10})
+			end
+--[[ 			local PetLevel = PlayerTable[5][i][1]
+			local PetXP = PlayerTable[5][i][2]
+			local PetGoalXP = PlayerTable[5][i][3]
+			PlayerTable[5][i][2] = PlayerTable[5][i][2]+10
+			if PetGoalXP <= PlayerTable[5][i][2] then
+				PlayerTable[5][i][2] = 0
+				PlayerTable[5][i][1] = PlayerTable[5][i][1] + 1
+				PlayerTable[5][i][3] = PlayerTable[5][i][3]*PlayerTable[5][i][1]
+			end ]]
+		end
+	end
+
+	Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value = Database.Convert(PlayerTable)
 	LevelGui.XPBarBackground.TextLabel.Text = "0/"..tostring(GoalXP)
-	PlayerDataStore:SetAsync(Player,PlayerData.Value)
-	GivePet:FireClient(Player,GivePets(Level+1))
+--[[ 	PlayerDataStore:SetAsync(Player,PlayerData.Value) ]]
+	GivePet:FireClient(Player,GivePets(Level+1,Player))
 end)
 
 EraseData.OnServerEvent:Connect(function(Player)
@@ -115,7 +154,9 @@ EraseData.OnServerEvent:Connect(function(Player)
 	PlayerTable[3]=1
 	PlayerTable[1]=0
 	PlayerTable[2]=20
-	PlayerTable[4]={}
+	PlayerTable[4]={"Dog"}
+	PlayerTable[5]={{1,0,20}}
+	PlayerTable[6]="Dog"
 	PlayerData.Value = Database.Convert(PlayerTable)
 	PlayerDataStore:SetAsync(Player,PlayerData.Value)
 end)

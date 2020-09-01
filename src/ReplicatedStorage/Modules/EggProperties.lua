@@ -38,4 +38,11 @@ function EggProperties.HitEgg()
     end
 end
 
+--[[ function EggProperties.DetermineXPClicked()
+    local PlayerDataString = game.Players.LocalPlayer:FindFirstChild("Data").PlayerData
+    local ExtractedData = Data.Pull(PlayerDataString.Value)
+    local XP = 
+    return XP
+end
+ ]]
 return EggProperties
