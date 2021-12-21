@@ -1,3 +1,4 @@
+--This script adds, changing, pulls, and converts json data. Does not need changing.
 Data = {}
 Data._index = Data
 

@@ -1,3 +1,5 @@
+--This script animates the egg after every click
+
 EggProperties = {}
 SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
 local ClientObjects = game.Workspace.ClientObjects

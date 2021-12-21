@@ -1,3 +1,4 @@
+--This script inserts a new egg by type into ClientObjects
 Egg = {}
 Egg._index = Egg
 
