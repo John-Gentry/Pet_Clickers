@@ -25,7 +25,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 	--[[ Current pet ]]
 	local CurrentEgg = Instance.new("StringValue", Data)
 	CurrentEgg.Name = "CurrentPet"
-	CurrentEgg.Value = "Dog"
+	CurrentEgg.Value = "Rabbit"
 
 	--[[ Will become a variable that stores all of the player pets in a list. Format: Pet1,Pet2,Pet3,Pet4 ]]
 	local Pets = Instance.new("StringValue", Data)
@@ -52,9 +52,9 @@ game.Players.PlayerAdded:Connect(function(Player)
 	table.insert(DataTable,0)
 	table.insert(DataTable,20)
 	table.insert(DataTable,1)
-	table.insert(DataTable,{"Dog"})
+	table.insert(DataTable,{"Rabbit"})
 	table.insert(DataTable,{{1,0,20}})
-	table.insert(DataTable,"Dog")
+	table.insert(DataTable,"Rabbit")
 	local PlayerData = Instance.new("StringValue", Data)
 	PlayerData.Name = "PlayerData"
 	PlayerData.Value = Database.Convert(DataTable)
@@ -154,9 +154,9 @@ EraseData.OnServerEvent:Connect(function(Player)
 	PlayerTable[3]=1
 	PlayerTable[1]=0
 	PlayerTable[2]=20
-	PlayerTable[4]={"Dog"}
+	PlayerTable[4]={"Rabbit"}
 	PlayerTable[5]={{1,0,20}}
-	PlayerTable[6]="Dog"
+	PlayerTable[6]="Rabbit"
 	PlayerData.Value = Database.Convert(PlayerTable)
 	PlayerDataStore:SetAsync(Player,PlayerData.Value)
 end)

@@ -18,7 +18,7 @@ function InventoryHandler.CheckChanges()
         while Inventory.Enabled == true do
             local PlayerDataString = Player:FindFirstChild("Data").PlayerData
             local ExtractedData = Data.Pull(PlayerDataString.Value)
-            local PetsInInventory = Inventory.InventoryFrame.ScrollingFrame.PetFrame.PetInventory:GetChildren()
+            local PetsInInventory = Inventory.InventoryFrame.ScrollingFrame:GetChildren()
             wait(0.1)
             for _,v in ipairs(PetsInInventory) do
                 if v:IsA("TextButton") then
@@ -37,9 +37,9 @@ function InventoryHandler.CheckChanges()
                                     PlayerDataString.Value = Data.Convert(ExtractedData)
                                 end
                                 print("Level: "..tostring(ExtractedData[5][i][1]).." XP: "..tostring(ExtractedData[5][i][2]).." GoalXP: "..tostring(ExtractedData[5][i][3]))
-                                ChangeGui.TweenLevelBar(Inventory.InventoryFrame.PetHolder.PetLevelFrame.ExpBar,ExtractedData[5][i][2],ExtractedData[5][i][3],1)
+                                ChangeGui.TweenLevelBar(Inventory.InventoryFrame.PetHolder.XPBar,ExtractedData[5][i][2],ExtractedData[5][i][3],1)
                                 Inventory.InventoryFrame.PetHolder.PetLevel.Text = "Level "..tostring(ExtractedData[5][i][1])
-                                Inventory.InventoryFrame.PetHolder.PetLevelFrame.TextLabel.Text = tostring(ExtractedData[5][i][2]).."/"..tostring(ExtractedData[5][i][3])
+                                Inventory.InventoryFrame.PetHolder.XPBarBackground.TextLabel.Text = tostring(ExtractedData[5][i][2]).."/"..tostring(ExtractedData[5][i][3])
                                 if ExtractedData[6] == c then
                                     Inventory.InventoryFrame.PetHolder.Equip.Text = "Equipped"
                                     Inventory.InventoryFrame.PetHolder.Equip.Roundify.ImageColor3 = Color3.fromRGB(41, 41, 41)

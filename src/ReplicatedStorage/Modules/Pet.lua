@@ -14,6 +14,7 @@ function Pet.new(Type,PetPosition)
     NewPet.Model.Parent = ClientObjects
     NewPet.Model.HitBox.CFrame = CFrame.new(PetPosition) 
     NewPet.Model.HitBox.CFrame = CFrame.new(PetPosition,Camera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z))
+    NewPet.Model.HitBox.CanCollide = true
     return NewPet.Model
 end
 

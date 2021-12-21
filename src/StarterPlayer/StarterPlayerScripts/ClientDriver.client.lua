@@ -150,7 +150,7 @@ MainGui.InventoryButton.MouseButton1Click:Connect(function()
         local PlayerTable = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
         PlayerGui.Inventory.Enabled = true
         InventoryHandler.CheckChanges()
-        local PetList = PlayerGui.Inventory.InventoryFrame.ScrollingFrame.PetFrame.PetInventory
+        local PetList = PlayerGui.Inventory.InventoryFrame.ScrollingFrame -- PlayerGui.Inventory.InventoryFrame.ScrollingFrame.PetFrame.PetInventory
         for _,c in pairs(PetList:GetChildren()) do if not c:IsA("UIGridLayout") then c:Destroy() end end
         if PlayerTable[4][1] ~= nil then
             for i=1,#PlayerTable[4] do

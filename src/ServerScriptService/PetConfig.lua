@@ -22,10 +22,10 @@ end
 --[[ Rarity ratios for each of the pets *]]
 function PetConfig.DeterminePet()
     local RarityList={
+        [0.2] = "Cat",
         [0.5] = "Dog",
-        [0.35] = "Cat",
-        [0.10] = "Chicken",
-        [0.05] = "Penguin"
+        [0.2] = "Rabbit",
+        [0.1] = "Penguin"
     }
     local Keys = {}
     local index = 1
@@ -39,43 +39,32 @@ end
 --[[ Puts pet movement into a thread, so it runs independently of the script itself.
 This will be changed into some sort of tween very soon.*]]
 function PetConfig.ThreadPet(Pet,Player)
-    local MovingConfig = TweenInfo.new(0.5,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0) --[[ Config for moving the pet in a linear direction (Better than updating every render) *]]
+    local character = Player.Character
+    local humRootPart = character:WaitForChild("HumanoidRootPart")
+    Pet:FindFirstChild("HitBox").CFrame = humRootPart.CFrame
+    --local MovingConfig = TweenInfo.new(0.5,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0) --[[ Config for moving the pet in a linear direction (Better than updating every render) *]]
     spawn(function()
-        local offset = Vector3.new(0,0.05,0.05)
-        while Pet.Parent ~= nil and Player.Character ~= nil do
-            wait(0.5)
-            GameRotation = Pet:WaitForChild("GameRotation")
-            PlayerPos = Player.Character:WaitForChild("HumanoidRootPart")
-            Pet:FindFirstChild("HitBox").Anchored = true
-            Distance = (PlayerPos.Position-Pet:FindFirstChild("HitBox").Position).Magnitude
 
-            function notjumping()
-                if Player.Character:FindFirstChild("Humanoid").Jump == true then
-                    wait(1)
-                    return false
-                else
-                    return true
-                end
-            end
-            if Player.Character ~= nil and Player.Character:FindFirstChild("Humanoid").Running and notjumping() then
-                local HitBox = Pet:FindFirstChild("HitBox")
-                local PlayerPosVector = Vector3.new(PlayerPos.Position.X/1.01,PlayerPos.Position.Y-2,PlayerPos.Position.Z/1.01)
-                x,y,z=HitBox.CFrame:ToEulerAnglesYXZ()
-                x=TweenService:Create(Pet:FindFirstChild("HitBox"),MovingConfig,{CFrame = CFrame.new(PlayerPosVector,HitBox.Position)*CFrame.Angles(math.rad(GameRotation.Value.X),math.rad(GameRotation.Value.Y),math.rad(GameRotation.Value.Z))})
-                x:Play()
-                if Distance < 6 or not Player.Character:FindFirstChild("Humanoid").Running then
-                    x:Pause()
-                end
---[[                 spawn(function()
-                    while x.Completed ~= Enum.PlaybackState.Completed do
-                        RunService.Stepped:Wait()
-                        HitBox.CFrame = CFrame.new(HitBox.Position,Vector3.new(PlayerPos.Position.X,PlayerPos.Position.Y,PlayerPos.Position.Z))
+        if Player then
+            local character = Player.Character
+            if character then
+                local humRootPart = character:WaitForChild("HumanoidRootPart")
+                local newPet = Pet:FindFirstChild("HitBox")
+                
+                local bodyPos = Instance.new("BodyPosition", newPet)
+                bodyPos.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                
+                local bodyGyro = Instance.new("BodyGyro", newPet)
+                bodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+                
+                while wait() do
+                    if character:WaitForChild("Humanoid").Jump == false then
+                        bodyPos.Position = humRootPart.Position + Vector3.new(2, -1.9, 3)
+                        bodyGyro.CFrame = humRootPart.CFrame
                     end
-                end) *]]
+                end
             end
         end
-
-        print("Pet nil")
     end)
 end
 
