@@ -168,8 +168,8 @@ MainGui.InventoryButton.MouseButton1Click:Connect(function()
                 PetButton.ViewportFrame.CurrentCamera = viewportCamera
                 viewportCamera.Parent = PetButton.ViewportFrame
                 
-                viewportCamera.CFrame = CFrame.new(Vector3.new(0, 2, 4), Pet.HitBox.Position)
-               --[[  Pet.HitBox.CFrame = CFrame.new(Pet.HitBox.Position,viewportCamera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z)) ]]
+                viewportCamera.CFrame = CFrame.new(Vector3.new(0, 2, 4), Pet.Head.Position)
+               --[[  Pet.Head.CFrame = CFrame.new(Pet.Head.Position,viewportCamera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z)) ]]
             end
         end
 
@@ -185,7 +185,7 @@ MainGui.InventoryButton.MouseButton1Click:Connect(function()
         PetHolder.Equip.Roundify.ImageColor3 = Color3.fromRGB(41, 41, 41)
         PetHolder.Equip.Text = "Equipped"
         viewportCamera.Parent = PetHolder.ViewportFrame
-        viewportCamera.CFrame = CFrame.new(Vector3.new(0, 2, 4), Pet.HitBox.Position)
+        viewportCamera.CFrame = CFrame.new(Vector3.new(0, 2, 4), Pet.Head.Position)
     elseif PlayerGui.Inventory.Enabled == true then
         PlayerGui.Inventory.Enabled = false
     end

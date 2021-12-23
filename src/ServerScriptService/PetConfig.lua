@@ -41,15 +41,19 @@ This will be changed into some sort of tween very soon.*]]
 function PetConfig.ThreadPet(Pet,Player)
     local character = Player.Character
     local humRootPart = character:WaitForChild("HumanoidRootPart")
-    Pet:FindFirstChild("HitBox").CFrame = humRootPart.CFrame
+    Pet:FindFirstChild("Head").CFrame = humRootPart.CFrame
+    local RotationTween = TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
     --local MovingConfig = TweenInfo.new(0.5,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0) --[[ Config for moving the pet in a linear direction (Better than updating every render) *]]
     spawn(function()
-
+        local PetHum = Pet:FindFirstChild("Humanoid")
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "http://www.roblox.com/asset/?id=8321329213"
+        local animationTrack = PetHum:LoadAnimation(animation)
         if Player then
             local character = Player.Character
             if character then
                 local humRootPart = character:WaitForChild("HumanoidRootPart")
-                local newPet = Pet:FindFirstChild("HitBox")
+                local newPet = Pet:FindFirstChild("Head")
                 
                 local bodyPos = Instance.new("BodyPosition", newPet)
                 bodyPos.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
@@ -58,10 +62,19 @@ function PetConfig.ThreadPet(Pet,Player)
                 bodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
                 
                 while wait() do
-                    if character:WaitForChild("Humanoid").Jump == false then
+                    if bodyGyro.CFrame ~= humRootPart.CFrame then
                         bodyPos.Position = humRootPart.Position + Vector3.new(2, -1.9, 3)
                         bodyGyro.CFrame = humRootPart.CFrame
+                        if not animationTrack.IsPlaying == true then
+                            animationTrack:Play()
+                        end
+                    else
+                        animationTrack:Stop()
                     end
+                    --spawn(function()
+                       -- bodyGyro.CFrame = bodyGyro.CFrame * CFrame.Angles(0, 0, 5)
+                        --bodyGyro.CFrame = bodyGyro.CFrame * CFrame.Angles(0, 0, -5)
+                    --end)
                 end
             end
         end

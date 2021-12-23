@@ -12,9 +12,9 @@ function Pet.new(Type,PetPosition)
     a = NewPet.Model:FindFirstChild("Rotation").Value
     --[[ print(PetPosition) ]]
     NewPet.Model.Parent = ClientObjects
-    NewPet.Model.HitBox.CFrame = CFrame.new(PetPosition) 
-    NewPet.Model.HitBox.CFrame = CFrame.new(PetPosition,Camera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z))
-    NewPet.Model.HitBox.CanCollide = true
+    NewPet.Model.Head.CFrame = CFrame.new(PetPosition) 
+    NewPet.Model.Head.CFrame = CFrame.new(PetPosition,Camera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z))
+    NewPet.Model.Head.CanCollide = true
     return NewPet.Model
 end
 
