@@ -23,10 +23,14 @@ end)
     end
 end *]]
 
-TriggerPlayerPet.OnServerEvent:Connect(function(Player,Pet)
+TriggerPlayerPet.OnServerEvent:Connect(function(Player,Pet) -- Move to petconfig
     CurrentPets=game.Workspace.PlayerPets:GetChildren()
     print(#CurrentPets)
-    for _,v in ipairs(CurrentPets) do v:Destroy() end
+    for _,v in ipairs(CurrentPets) do
+        if string.find(v.Name, Player.Name) then -- string expected got instance
+            v:Destroy()
+        end
+    end
 
     Pet = ReplicatedStorage.Pets:FindFirstChild(Pet):Clone()
     Pet.Name = Pet.Name.."_"..Player.Name
