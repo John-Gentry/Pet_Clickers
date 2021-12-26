@@ -1,3 +1,6 @@
+--[[
+    This script handles anything related to the pet
+]]
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 PetConfig = {}
@@ -46,12 +49,14 @@ function PetConfig.ThreadPet(Pet,Player)
     --local MovingConfig = TweenInfo.new(0.5,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0) --[[ Config for moving the pet in a linear direction (Better than updating every render) *]]
     spawn(function()
         local PetHum = Pet:FindFirstChild("Humanoid")
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "http://www.roblox.com/asset/?id=8321329213"
-        local animationTrack = PetHum:LoadAnimation(animation)
+        local WalkingAnimation = Instance.new("Animation")
+        local StandingAnimation = Instance.new("Animation")
         if Player then
             local character = Player.Character
-            if character then
+            if character then -- 8327638565
+                WalkingAnimation.Name = "WalkingAnimation"
+                WalkingAnimation.AnimationId = "http://www.roblox.com/asset/?id=8321329213"
+                local RunningTrack = PetHum:LoadAnimation(WalkingAnimation)
                 local humRootPart = character:WaitForChild("HumanoidRootPart")
                 local newPet = Pet:FindFirstChild("Head")
                 
@@ -65,11 +70,11 @@ function PetConfig.ThreadPet(Pet,Player)
                     if bodyGyro.CFrame ~= humRootPart.CFrame then
                         bodyPos.Position = humRootPart.Position + Vector3.new(2, -1.9, 3)
                         bodyGyro.CFrame = humRootPart.CFrame
-                        if not animationTrack.IsPlaying == true then
-                            animationTrack:Play()
+                        if not RunningTrack.IsPlaying == true then
+                            RunningTrack:Play()
                         end
                     else
-                        animationTrack:Stop()
+                        RunningTrack:Stop()
                     end
                     --spawn(function()
                        -- bodyGyro.CFrame = bodyGyro.CFrame * CFrame.Angles(0, 0, 5)

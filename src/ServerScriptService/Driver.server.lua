@@ -1,6 +1,11 @@
+--[[
+    Driver script mostly listens for events called by the client
+]]
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 ReplicatedStorage = game.ReplicatedStorage
+--Events
 CameraEvent = ReplicatedStorage.RemoteEvents:WaitForChild("CameraMode")
 BackToPlayerCamera = ReplicatedStorage.RemoteEvents:WaitForChild("BackToPlayerCamera")
 TriggerPlayerPet = ReplicatedStorage.RemoteEvents:WaitForChild("TriggerPlayerPet")

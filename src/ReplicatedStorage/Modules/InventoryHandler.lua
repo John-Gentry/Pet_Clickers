@@ -37,7 +37,7 @@ function InventoryHandler.CheckChanges()
                                     PlayerDataString.Value = Data.Convert(ExtractedData)
                                 end
                                 print("Level: "..tostring(ExtractedData[5][i][1]).." XP: "..tostring(ExtractedData[5][i][2]).." GoalXP: "..tostring(ExtractedData[5][i][3]))
-                                ChangeGui.TweenLevelBar(Inventory.InventoryFrame.PetHolder.XPBar,ExtractedData[5][i][2],ExtractedData[5][i][3],1)
+                                ChangeGui.TweenLevelBar(Inventory.InventoryFrame.PetHolder.XPBarBackground.XPBar,ExtractedData[5][i][2],ExtractedData[5][i][3],0.912) -- this is where it messes up
                                 Inventory.InventoryFrame.PetHolder.PetLevel.Text = "Level "..tostring(ExtractedData[5][i][1])
                                 Inventory.InventoryFrame.PetHolder.XPBarBackground.TextLabel.Text = tostring(ExtractedData[5][i][2]).."/"..tostring(ExtractedData[5][i][3])
                                 if ExtractedData[6] == c then
