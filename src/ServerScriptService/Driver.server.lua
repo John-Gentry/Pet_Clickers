@@ -75,7 +75,7 @@ GetAmount.OnServerInvoke=function(Player,Level,Data)
     end
     local Level = tonumber(PlayerData[3])
     increment = increment*tonumber(Level)
-    print(Database.Convert(PlayerData))
+    --print(Database.Convert(PlayerData))
     return {increment,Database.Convert(PlayerData),LevelUp}
 end
 

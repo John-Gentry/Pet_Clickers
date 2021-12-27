@@ -62,6 +62,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 	table.insert(DataTable,{{1,0,20}})
 	table.insert(DataTable,"Rabbit")
 	table.insert(DataTable,0)
+	table.insert(DataTable,1)
 	local PlayerData = Instance.new("StringValue", Data)
 	PlayerData.Name = "PlayerData"
 	PlayerData.Value = Database.Convert(DataTable)
@@ -74,7 +75,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 		print(PlayerDataStore)
 		if type(PlayerDataStore)=="table" then PlayerDataStore=Database.Convert(PlayerDataStore) end
 		PlayerData.Value = PlayerDataStore
-		LevelGui.BoosterButton.Text = "Level "..tostring(Database.Pull(PlayerDataStore)[3])
+		--LevelGui.BoosterButton.Text = "Level "..tostring(Database.Pull(PlayerDataStore)[3])
 		LevelGui.XPBarBackground.TextLabel.Text = "0/"..tostring(Database.Pull(PlayerDataStore)[2])
 	else
 		print("Failed to load player data. Caused by new player entered or corrupted data.")
@@ -165,6 +166,7 @@ EraseData.OnServerEvent:Connect(function(Player)
 	PlayerTable[5]={{1,0,20}}
 	PlayerTable[6]="Rabbit"
 	PlayerTable[7]=0
+	PlayerTable[8]=1
 	PlayerData.Value = Database.Convert(PlayerTable)
 	PlayerDataStore:SetAsync(Player,PlayerData.Value)
 end)

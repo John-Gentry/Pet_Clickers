@@ -31,7 +31,7 @@ local MainGui = PlayerGui:WaitForChild("MainGui")
 local Equip = PlayerGui:WaitForChild("Inventory").InventoryFrame.PetHolder.Equip
 
 local XPText = MainGui.Level.XPBarBackground.TextLabel
-local LevelText = MainGui.Level.BoosterButton
+--local LevelText = MainGui.Level.BoosterButton
 local Bar = MainGui.Level.XPBar
 
 --[[ Player data ]]
@@ -50,34 +50,53 @@ local Mouse = Player:GetMouse()
 PlayerHandler.MakePlayerInvisible(Player)
 Playing.Value = true
 
-function OnPlayerClick()
-    local PlayerData = Data:WaitForChild("PlayerData")
-    local Playing = Data:WaitForChild("Playing")
+local ClickCoolDown = false
 
-    if Playing.Value == true and PlayerView.Value == false then
-        local CallBackList = GetAmount:InvokeServer(Level,PlayerData.Value)
-        Amount=CallBackList[1]
-        PlayerData.Value = CallBackList[2]
-        local PlayerTable = Database.Pull(PlayerData.Value)
-        local XP = tonumber(PlayerTable[1])
-        local GoalXP = tonumber(PlayerTable[2])
-        local Level = tonumber(PlayerTable[3])
-        PlayerTable[1] = XP + Amount
-        PlayerData.Value = Database.Convert(PlayerTable)
-        if CallBackList[3] == true then
-            print("Called")
-            spawn(function() ChangeGui.PetLevelUp() end)
-        end
-        if XP <= GoalXP then
-            XPText.Text = tostring(XP).."/"..tostring(GoalXP)
-        else
-            XPText.Text = tostring(GoalXP).."/"..tostring(GoalXP)
-        end
-        LevelText.Text = "Level: "..tostring(Level)
-        spawn(function()ChangeGui.AddXP(Amount)end) --change
-        ChangeGui.DetermineLevel(XP,GoalXP,Level)
-        ChangeGui.TweenLevelBar(Bar,XP,GoalXP,0.25)
-        EggProperties.HitEgg()
+function SetCoolDown()
+    ClickCoolDown = true
+    wait(0.2) --[[ Sets cooldown between clicks, not noticible unless using an auto clicker ]]
+    ClickCoolDown = false
+end
+
+function ClickActions()
+    --print("firing")
+    Data = Player:FindFirstChild("Data")
+    local PlayerData = Data:FindFirstChild("PlayerData")
+    local Playing = Data:WaitForChild("Playing")
+    spawn(function()SetCoolDown()end)
+
+    local CallBackList = GetAmount:InvokeServer(Level,PlayerData.Value)--[[ This here is causing problems ]]
+    Amount=CallBackList[1]
+    PlayerData.Value = CallBackList[2]
+    --print(CallBackList[2])
+    
+    local PlayerTable = Database.Pull(PlayerData.Value)
+    local XP,GoalXP,Level,Clicks = tonumber(PlayerTable[1]),tonumber(PlayerTable[2]),tonumber(PlayerTable[3]),tonumber(PlayerTable[7])
+    PlayerTable[1] = XP + Amount
+    PlayerTable[7] = PlayerTable[7] + PlayerTable[8]
+    PlayerData.Value = Database.Convert(PlayerTable)
+    ChangeGui.AddClick(tonumber(PlayerTable[7]))
+    if CallBackList[3] == true then
+        print("Pet level up")
+        spawn(function() ChangeGui.PetLevelUp() end)
+    end
+    if XP <= GoalXP then
+        XPText.Text = tostring(XP).."/"..tostring(GoalXP)
+    else
+        XPText.Text = tostring(GoalXP).."/"..tostring(GoalXP)
+    end
+    --LevelText.Text = "Level: "..tostring(Level)
+    spawn(function()ChangeGui.AddXP(Amount)end) --change
+    ChangeGui.DetermineLevel(XP,GoalXP,Level)
+    ChangeGui.TweenLevelBar(Bar,XP,GoalXP,0.25)
+    EggProperties.HitEgg()
+end
+
+function OnPlayerClick()
+    if Playing.Value == true and PlayerView.Value == false and ClickCoolDown == false then
+        ClickActions()
+    else
+        print("not firing")
     end
 end
 
@@ -126,20 +145,20 @@ end)
 
 MainGui.WalkPetButton.MouseButton1Click:Connect(function()
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
-    if MainGui.WalkPetButton.Text == "Walk your pet!" and (Playing.Value == true or PlayerView.Value == false) then
+    if (Playing.Value == true or PlayerView.Value == false) then
         for _,v in ipairs(ClientObjects:GetChildren()) do v:Destroy() end
         PlayerHandler.MakePlayerVisible(Player)
         Playing.Value = false
         BackToPlayerCamera:FireServer()
-        MainGui.WalkPetButton.Text = "Hatch an egg!"
+        --MainGui.WalkPetButton.Text = "Hatch an egg!"
         TriggerPlayerPet:FireServer(CurrentPet.Value)
-    elseif MainGui.WalkPetButton.Text == "Hatch an egg!" and Playing.Value == false then
+    elseif Playing.Value == false then
         R.RemoteEvents.RemovePetInGame:FireServer(CurrentPet.value.."_"..Player.Name)
         Playing.Value = true
         PlayerHandler.MakePlayerInvisible(Player)
         PlayerView.Value = false
         EggModule.new("StarterEgg",EggPosition)
-        MainGui.WalkPetButton.Text = "Walk your pet!"
+        --MainGui.WalkPetButton.Text = "Walk your pet!"
     end
 end)
 

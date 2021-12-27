@@ -25,9 +25,11 @@ end
 --[[ Rarity ratios for each of the pets *]]
 function PetConfig.DeterminePet()
     local RarityList={
-        [0.2] = "Cat",
-        [0.5] = "Dog",
-        [0.2] = "Rabbit",
+        [0.1] = "Cat",
+        [0.1] = "Dog",
+        [0.2] = "Koala",
+        [0.1] = "Rabbit",
+        [0.4] = "Dalmatin",
         [0.1] = "Penguin"
     }
     local Keys = {}

@@ -34,6 +34,10 @@ function ChangeGui.AddXP(Amount)
     end
     AddXPText:Destroy()
 end
+function ChangeGui.AddClick(Amount)
+    local ClickText = MainGui:WaitForChild("ClicksGui").Clicks
+    ClickText.Text = tostring(Amount)
+end
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
 function ChangeGui.DetermineLevel(XP,GoalXP,Level)
     local PlayerTable = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
