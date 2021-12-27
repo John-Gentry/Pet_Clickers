@@ -64,8 +64,9 @@ GetAmount.OnServerInvoke=function(Player,Level,Data)
         table.insert(PlayerData[5],{1,0,10})
     end
     for i,v in pairs(PlayerData[5]) do
-        increment = increment+(((i*2)*PlayerData[5][i][1])/5)
         PlayerData[5][i][2] = PlayerData[5][i][2]+(1/(i/2))
+        increment = increment + PlayerData[5][i][1]
+        print("Pet level: "..tostring(PlayerData[5][i][1]))
         if PlayerData[5][i][2] >= PlayerData[5][i][3] then
             PlayerData[5][i][1] = PlayerData[5][i][1]+1
             PlayerData[5][i][2] = 0
@@ -73,8 +74,8 @@ GetAmount.OnServerInvoke=function(Player,Level,Data)
             LevelUp = true
         end
     end
+    PlayerData[8] = increment
     local Level = tonumber(PlayerData[3])
-    increment = increment*tonumber(Level)
     --print(Database.Convert(PlayerData))
     return {increment,Database.Convert(PlayerData),LevelUp}
 end

@@ -53,7 +53,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 		--Full string:
 		--[691.1999999999999,100800,8,["Rabbit","Dog"],[[10,18,200],[7,19,140]],"Rabbit"]
 	--[[
-		1: XP value, 2: Maximum XP, 3: Level, 4: Pets obtained, 5: List in order of pet (XP, Level, MaxXP), 6: Current pet open
+		1: XP value, 2: Maximum XP, 3: Level, 4: Pets obtained, 5: List in order of pet (XP, Level, MaxXP), 6: Current pet open 8: per click
 	]]
 	table.insert(DataTable,0)
 	table.insert(DataTable,20)
