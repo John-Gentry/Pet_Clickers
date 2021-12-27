@@ -87,8 +87,8 @@ function ClickActions()
     end
     --LevelText.Text = "Level: "..tostring(Level)
     spawn(function()ChangeGui.AddXP(Amount)end) --change
-    ChangeGui.DetermineLevel(XP,GoalXP,Level)
     ChangeGui.TweenLevelBar(Bar,XP,GoalXP,0.25)
+    ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
     EggProperties.HitEgg()
 end
 
@@ -179,32 +179,21 @@ MainGui.InventoryButton.MouseButton1Click:Connect(function()
                 PetButton.PetTextName.Text = PlayerTable[4][i]
                 PetButton.Parent = PetList
 
-                Pet.Parent = PetButton.ViewportFrame
-                a = Pet:FindFirstChild("Rotation").Value
-                
 
-                local viewportCamera = Instance.new("Camera")
-                PetButton.ViewportFrame.CurrentCamera = viewportCamera
-                viewportCamera.Parent = PetButton.ViewportFrame
-                
-                viewportCamera.CFrame = CFrame.new(Vector3.new(0, 2, 4), Pet.Head.Position)
-               --[[  Pet.Head.CFrame = CFrame.new(Pet.Head.Position,viewportCamera.CFrame.p)*CFrame.Angles(math.rad(a.x), math.rad(a.y), math.rad(a.z)) ]]
+                spawn(function() InventoryHandler.ViewPet(Pet,PetButton.ViewportFrame) end)
+
             end
         end
 
-        local viewportCamera = Instance.new("Camera")
         local CurrentPet = PlayerTable[6]
         print(CurrentPet)
         local Pet = R.Pets:FindFirstChild(CurrentPet):Clone()
         local PetHolder = PlayerGui.Inventory.InventoryFrame.PetHolder
         for _,v in ipairs(PetHolder.ViewportFrame:GetChildren()) do if v:IsA("Model") then v:Destroy() end end
-        Pet.Parent = PetHolder.ViewportFrame
-        PetHolder.ViewportFrame.CurrentCamera = viewportCamera
         PetHolder.PetName.Text = Pet.Name
         PetHolder.Equip.Roundify.ImageColor3 = Color3.fromRGB(41, 41, 41)
         PetHolder.Equip.Text = "Equipped"
-        viewportCamera.Parent = PetHolder.ViewportFrame
-        viewportCamera.CFrame = CFrame.new(Vector3.new(0, 2, 4), Pet.Head.Position)
+        spawn(function() InventoryHandler.ViewPet(Pet,PetHolder.ViewportFrame) end)
     elseif PlayerGui.Inventory.Enabled == true then
         PlayerGui.Inventory.Enabled = false
     end

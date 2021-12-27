@@ -39,7 +39,7 @@ function ChangeGui.AddClick(Amount)
     ClickText.Text = tostring(Amount)
 end
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
-function ChangeGui.DetermineLevel(XP,GoalXP,Level)
+function ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
     local PlayerTable = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
     local XP = tonumber(PlayerTable[1])
     local GoalXP = tonumber(PlayerTable[2])
@@ -47,7 +47,9 @@ function ChangeGui.DetermineLevel(XP,GoalXP,Level)
     local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
     local CurrentPet = Player:FindFirstChild("Data"):WaitForChild("CurrentPet")
     if XP >= GoalXP and Playing.Value == true then
+        print("bar size changed")
         Playing.Value = false
+        Bar:TweenSize(UDim2.new(1, 0, 0.25, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0,true, callback)
         local egg = ClientObjects:WaitForChild("StarterEgg")
         local Up = TweenInfo.new(1,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
         
@@ -78,14 +80,17 @@ function ChangeGui.CloseContinuePrompt()
     --MainGui:FindFirstChild("Cloud").Visible = false
 end
 function ChangeGui.TweenLevelBar(Bar,XP,GoalXP,Y)
-    if XP > GoalXP then
-        XP = GoalXP
+    local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
+    if Playing then
+        if XP > GoalXP then
+            XP = GoalXP
+        end
+        local x = (XP/GoalXP)*1
+        if x > 1 then
+            x = 1
+        end
+        Bar:TweenSize(UDim2.new(x, 0, Y, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.3,true, callback)
     end
-    local x = (XP/GoalXP)*1
-    if x > 1 then
-        x = 1
-    end
-    Bar:TweenSize(UDim2.new(x, 0, Y, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.3,true, callback)
 end
 
 

@@ -11,6 +11,30 @@ local Pets = R.Pets
 InventoryHandler = {}
 --[[ Creates a new thread to handle any clicks to the pet inventory. Searches for changes to the "active" value within the script.
 Don't mind the nesting ._. ]]
+
+function InventoryHandler.ViewPet(pet,viewportFrame)
+    --pet:MoveTo(Vector3.new(0, 0, 0))
+    --pet:SetPrimaryPartCFrame(pet:GetPrimaryPartCFrame() * CFrame.Angles(0, math.rad(90), 0))
+    local Offset = CFrame.new(0,0,5)
+    local viewportCamera = Instance.new("Camera")
+    viewportFrame.CurrentCamera = viewportCamera
+    viewportCamera.Parent = viewportFrame
+    --viewportCamera.CFrame = CFrame.new(Vector3.new(0, 2, 10), pet.Head.Position)
+    pet.Parent = viewportFrame
+    local Point = CFrame.new(0,0,0)
+
+    viewportCamera.CameraType = "Scriptable"
+    viewportCamera.Focus = Point
+    viewportCamera.CameraSubject = pet.Head
+    --viewportCamera.CFrame = Point * CFrame.Angles(0,math.rad(180),0) * Offset
+    while 1 do
+        for i = 1,3600 do
+            viewportCamera.CFrame = Point * CFrame.Angles(0,math.rad(i/0.2),0) * Offset
+            wait()
+        end
+    end
+end
+
 function InventoryHandler.CheckChanges()
     spawn(function()
         local Inventory = Player.PlayerGui:WaitForChild("Inventory")
@@ -30,7 +54,7 @@ function InventoryHandler.CheckChanges()
                                 local trash = Inventory.InventoryFrame.PetHolder.ViewportFrame:GetChildren()
                                 for _,b in ipairs(trash) do if b:IsA("Model") then b:Destroy() end end
                                 local pet = v.ViewportFrame:FindFirstChild(c):Clone()
-                                pet.Parent = Inventory.InventoryFrame.PetHolder.ViewportFrame
+                                spawn(function() InventoryHandler.ViewPet(pet,Inventory.InventoryFrame.PetHolder.ViewportFrame) end)
                                 Inventory.InventoryFrame.PetHolder.PetName.Text = c
                                 if ExtractedData[5][i] == nil then
                                     ExtractedData[5][i] = {1,0,20}
