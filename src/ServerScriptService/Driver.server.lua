@@ -28,6 +28,12 @@ end)
     end
 end *]]
 
+--[[ spawn(function()
+    while wait() do
+        print(PetConfig.DeterminePet())
+    end
+end) ]]
+
 TriggerPlayerPet.OnServerEvent:Connect(function(Player,Pet) -- Move to petconfig
     CurrentPets=game.Workspace.PlayerPets:GetChildren()
     print(#CurrentPets)
@@ -51,7 +57,11 @@ end)
 
 RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)
     local Pet = game.Workspace.PlayerPets:GetChildren()
-    for _,v in pairs(Pet) do v:Destroy() end
+    for _,v in pairs(Pet) do
+        if string.find(v.Name, Player.Name) then
+            v:Destroy()
+        end
+    end
     CameraEvent:FireClient(Player,true)
 end)
 
@@ -72,6 +82,10 @@ GetAmount.OnServerInvoke=function(Player,Level,Data)
             PlayerData[5][i][2] = 0
             PlayerData[5][i][3] = PlayerData[5][i][1]*20
             LevelUp = true
+        end
+        if PlayerData[5][i][1] < ReplicatedStorage.Pets:WaitForChild(PlayerData[4][i]):FindFirstChild("StarterPower").Value then
+            print("Upgraded pets")
+            PlayerData[5][i][1] = ReplicatedStorage.Pets:WaitForChild(PlayerData[4][i]):FindFirstChild("StarterPower").Value
         end
     end
     PlayerData[8] = increment

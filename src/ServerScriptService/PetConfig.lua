@@ -24,23 +24,31 @@ end
 
 --[[ Rarity ratios for each of the pets *]]
 function PetConfig.DeterminePet()
-    local RarityList={
-        [0.1] = "Cat",
-        [0.1] = "Dog",
-        [0.2] = "Koala",
-        [0.1] = "Rabbit",
-        [0.4] = "Dalmatin",
-        [0.1] = "Penguin"
+    local percentages = {
+        {Name = "Cat", Percentage = 0.4},
+        {Name = "Dog", Percentage = 0.2},
+        {Name = "Rabbit", Percentage = 0.1},
+        {Name = "Dalmatin", Percentage = 0.1},
+        {Name = "Penguin", Percentage = 0.1},
+        {Name = "Koala", Percentage = 0.1}
     }
-    local Keys = {}
-    local index = 1
-    for key, _ in next, RarityList do
-        Keys[index] = key
-        index = index + 1
-    end
-    selection = selectpet(Keys)
-    return RarityList[Keys[selection]]
+    selection = selectpet(percentages)
+    return selection["Name"]
 end
+
+
+function selectpet(table)
+	local rand = math.random();
+	local pastPercentage = 0;
+	for i = 1, #table do
+		if rand < table[i].Percentage + pastPercentage then 
+			return table[i];
+		end
+		pastPercentage = pastPercentage + table[i].Percentage;
+	end
+end
+
+
 --[[ Puts pet movement into a thread, so it runs independently of the script itself.
 This will be changed into some sort of tween very soon.*]]
 function PetConfig.ThreadPet(Pet,Player)

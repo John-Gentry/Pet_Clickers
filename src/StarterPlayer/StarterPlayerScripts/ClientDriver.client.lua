@@ -54,7 +54,8 @@ local ClickCoolDown = false
 spawn(function()ChangeGui.UpdateCoins()end)
 
 spawn(function() -- Detect around daily reward
-    while wait() do
+    while wait(0.1) do
+
         local HRP = Character:WaitForChild("HumanoidRootPart")
         local magnitude = (Vector3.new(-221.464, -359.67, -291.814) - HRP.Position).Magnitude
         if magnitude < 10 then

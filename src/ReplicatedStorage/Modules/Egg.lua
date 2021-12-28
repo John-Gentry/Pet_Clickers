@@ -11,7 +11,7 @@ function Egg.new(Type,EggPosition)
     local ClientObjects = game.Workspace.ClientObjects
     local NewEgg = {}
     setmetatable(NewEgg, Egg)
-    NewEgg.Model = Eggs:WaitForChild(tostring(Type)):Clone()
+    NewEgg.Model = Eggs:WaitForChild("StarterEgg"):Clone()
     NewEgg.Model.Position = EggPosition
     NewEgg.Model.Parent = ClientObjects
     return NewEgg.Model

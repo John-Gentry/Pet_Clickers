@@ -40,7 +40,7 @@ function ChangeGui.AddClick(Amount)
 end
 
 function ChangeGui.UpdateCoins()
-    while wait() do
+    while wait(0.1) do
         local PlayerTable = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
         MainGui:FindFirstChild("CashGui").Cash.Text = tostring(PlayerTable[9])
     end
