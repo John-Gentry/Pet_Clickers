@@ -27,8 +27,8 @@ function PetConfig.DeterminePet()
     local percentages = {
         {Name = "Cat", Percentage = 0.4},
         {Name = "Dog", Percentage = 0.2},
-        {Name = "Rabbit", Percentage = 0.1},
-        {Name = "Dalmatin", Percentage = 0.1},
+        {Name = "Rabbit", Percentage = 0.2},
+        {Name = "Dalmatin", Percentage = 0.05},
         {Name = "Penguin", Percentage = 0.1},
         {Name = "Koala", Percentage = 0.1}
     }
