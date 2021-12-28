@@ -38,6 +38,14 @@ function ChangeGui.AddClick(Amount)
     local ClickText = MainGui:WaitForChild("ClicksGui").Clicks
     ClickText.Text = tostring(Amount)
 end
+
+function ChangeGui.UpdateCoins()
+    while wait() do
+        local PlayerTable = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
+        MainGui:FindFirstChild("CashGui").Cash.Text = tostring(PlayerTable[9])
+    end
+end
+
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
 function ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
     local PlayerTable = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)

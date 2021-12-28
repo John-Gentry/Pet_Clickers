@@ -1,5 +1,5 @@
 local Player = game.Players.LocalPlayer
-Character = Player.CharacterAdded:Wait() or Player.Character
+local Character = Player.CharacterAdded:Wait() or Player.Character
 
 --[[ Services ]]
 local UserInputService = game:GetService("UserInputService")
@@ -42,7 +42,7 @@ local PlayerView = Data:WaitForChild("PlayerView")
 --[[ Various Objects ]]
 local ClientObjects = game.Workspace.ClientObjects
 local EggPosition = EggModule.GetPosition()
-local Egg = EggModule.new("StarterEgg",EggPosition)
+local Egg = EggModule.new("StarterEgg", EggPosition)
 local Pet = nil
 local Mouse = Player:GetMouse()
 
@@ -51,6 +51,17 @@ PlayerHandler.MakePlayerInvisible(Player)
 Playing.Value = true
 
 local ClickCoolDown = false
+spawn(function()ChangeGui.UpdateCoins()end)
+
+spawn(function() -- Detect around daily reward
+    while wait() do
+        local HRP = Character:WaitForChild("HumanoidRootPart")
+        local magnitude = (Vector3.new(-221.464, -359.67, -291.814) - HRP.Position).Magnitude
+        if magnitude < 10 then
+            print("true")
+        end
+    end
+end)
 
 function SetCoolDown()
     ClickCoolDown = true
