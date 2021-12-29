@@ -12,7 +12,7 @@ InventoryHandler = {}
 --[[ Creates a new thread to handle any clicks to the pet inventory. Searches for changes to the "active" value within the script.
 Don't mind the nesting ._. ]]
 
-function InventoryHandler.ViewPet(pet,viewportFrame)
+function InventoryHandler.ViewPet(pet,viewportFrame) -- Change the name of this in the future, will be used for other viewport frames
     --pet:MoveTo(Vector3.new(0, 0, 0))
     --pet:SetPrimaryPartCFrame(pet:GetPrimaryPartCFrame() * CFrame.Angles(0, math.rad(90), 0))
     local Offset = CFrame.new(0,0,5)

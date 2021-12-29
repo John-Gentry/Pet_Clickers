@@ -25,7 +25,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 	--[[ Current pet ]]
 	local CurrentEgg = Instance.new("StringValue", Data)
 	CurrentEgg.Name = "CurrentPet"
-	CurrentEgg.Value = "Rabbit"
+	CurrentEgg.Value = "Cat"
 
 	--[[ Will become a variable that stores all of the player pets in a list. Format: Pet1,Pet2,Pet3,Pet4 ]]
 	local Pets = Instance.new("StringValue", Data)
@@ -53,18 +53,20 @@ game.Players.PlayerAdded:Connect(function(Player)
 		--Full string:
 		--[691.1999999999999,100800,8,["Rabbit","Dog"],[[10,18,200],[7,19,140]],"Rabbit"]
 	--[[
-		1: XP value, 2: Maximum XP, 3: Level, 4: Pets obtained, 5: List in order of pet (XP, Level, MaxXP), 6: Current pet open 7:total clicks 8: per click 9: coins
+		1: XP value, 2: Maximum XP, 3: Level, 4: Pets obtained, 5: List in order of pet (XP, Level, MaxXP), 6: Current pet open 7:total clicks 8: per click 9: coins 10:last reward 11:current egg
 	]]
 	table.insert(DataTable,0)
-	table.insert(DataTable,20)
+	table.insert(DataTable,ReplicatedStorage.Eggs:FindFirstChild("StarterEgg"):FindFirstChild("Difficulty").Value)
 	table.insert(DataTable,1)
-	table.insert(DataTable,{"Rabbit"})
+	table.insert(DataTable,{"Cat"})
 	table.insert(DataTable,{{1,0,20}})
-	table.insert(DataTable,"Rabbit")
+	table.insert(DataTable,"Cat")
 	table.insert(DataTable,0)
 	table.insert(DataTable,1)
 	table.insert(DataTable,0)
 	table.insert(DataTable,"") -- last reward time
+	table.insert(DataTable,"StarterEgg") -- Current egg
+	table.insert(DataTable,10) -- Gems
 	local PlayerData = Instance.new("StringValue", Data)
 	PlayerData.Name = "PlayerData"
 	PlayerData.Value = Database.Convert(DataTable)
@@ -129,7 +131,7 @@ LevelUp.OnServerEvent:Connect(function(Player,CurrentPet,Data)
     local GoalXP = tonumber(PlayerTable[2])
 	local Level = tonumber(PlayerTable[3])
 	PlayerTable[1]=0
-	PlayerTable[2]=(GoalXP*Level)
+	PlayerTable[2]=ReplicatedStorage.Eggs:FindFirstChild(PlayerTable[11]):FindFirstChild("Difficulty").Value --(GoalXP*Level)
 	PlayerTable[3]=Level+1
 
  	for i,v in pairs(PlayerTable[4]) do
@@ -163,14 +165,16 @@ EraseData.OnServerEvent:Connect(function(Player)
     local Level = tonumber(PlayerTable[3])
 	PlayerTable[3]=1
 	PlayerTable[1]=0
-	PlayerTable[2]=20
-	PlayerTable[4]={"Rabbit"}
+	PlayerTable[2]=ReplicatedStorage.Eggs:FindFirstChild("StarterEgg"):FindFirstChild("Difficulty").Value
+	PlayerTable[4]={"Cat"}
 	PlayerTable[5]={{1,0,20}}
-	PlayerTable[6]="Rabbit"
+	PlayerTable[6]="Cat"
 	PlayerTable[7]=0
 	PlayerTable[8]=1
 	PlayerTable[9]=0
 	PlayerTable[10]=""
+	PlayerTable[11]="StarterEgg"
+	PlayerTable[12]=10
 	PlayerData.Value = Database.Convert(PlayerTable)
 	PlayerDataStore:SetAsync(Player,PlayerData.Value)
 end)

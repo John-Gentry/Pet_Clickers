@@ -52,6 +52,7 @@ Playing.Value = true
 
 local ClickCoolDown = false
 spawn(function()ChangeGui.UpdateCoins()end)
+spawn(function()ChangeGui.UpdateGems()end)
 
 spawn(function() -- Detect around daily reward
     while wait(0.1) do
@@ -63,6 +64,13 @@ spawn(function() -- Detect around daily reward
         end
     end
 end)
+
+ChangeGui.PromptRandomViewport(R:WaitForChild("GemDisplay"),R:WaitForChild("DropFrame"),10,1,1)
+
+--[[ spawn(function()
+    local Coin = R:WaitForChild("CoinDisplay"):Clone()
+    InventoryHandler.ViewPet(Coin,MainGui.PromptCoins.CoinFrame)
+end) ]]
 
 function SetCoolDown()
     ClickCoolDown = true

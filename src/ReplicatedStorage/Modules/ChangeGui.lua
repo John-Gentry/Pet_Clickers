@@ -9,6 +9,41 @@ local ReplicatedStorage = game.ReplicatedStorage
 local TweenService = game:GetService("TweenService")
 local Database = require(ReplicatedStorage.Modules.Data)
 
+
+function ChangeGui.PromptRandomViewport(Model,viewportFrame,amount,interations,rotationspeed) -- For coin rain, gem rain
+    for i = 1, amount do
+        spawn(function()
+            print("running")
+            local Offset = CFrame.new(0,0,4)
+            local viewportCamera = Instance.new("Camera")
+            local viewportFrame=viewportFrame:Clone()
+            local randomposition = math.random()
+
+            viewportFrame.Parent = MainGui.PromptCurrency
+            viewportFrame.CurrentCamera = viewportCamera
+            viewportFrame.Position = UDim2.new(randomposition, 0, math.random()-1, 0)
+            viewportCamera.Parent = viewportFrame
+            viewportFrame:TweenPosition(UDim2.new(randomposition, 0, 1.5, 0), 'Out', 'Linear', 4)
+
+            Model:Clone().Parent = viewportFrame
+            local Point = CFrame.new(0,0,0)
+
+            viewportCamera.CameraType = "Scriptable"
+            viewportCamera.Focus = Point
+            viewportCamera.CameraSubject = Model.Head
+
+            for i = 1, interations do
+                for i = 1,100 do
+                    viewportCamera.CFrame = Point * CFrame.Angles(0,math.rad(i/rotationspeed),0) * Offset
+                    wait()
+                end
+                --print("finished")
+            end
+            viewportFrame:Destroy()
+        end)
+    end
+end
+
 function ChangeGui.PetLevelUp()
     local AddXPText = ReplicatedStorage.PetLevel:Clone()
     AddXPText.Parent = MainGui
@@ -45,6 +80,14 @@ function ChangeGui.UpdateCoins()
         MainGui:FindFirstChild("CashGui").Cash.Text = tostring(PlayerTable[9])
     end
 end
+
+function ChangeGui.UpdateGems()
+    while wait(0.1) do
+        local PlayerTable = Database.Pull(Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
+        MainGui:FindFirstChild("GemGui").Cash.Text = tostring(PlayerTable[12])
+    end
+end
+
 
 local PlayerView = Player:WaitForChild("Data"):WaitForChild("PlayerView")
 function ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
