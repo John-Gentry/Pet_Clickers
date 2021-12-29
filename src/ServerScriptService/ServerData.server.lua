@@ -7,8 +7,55 @@ local LevelDataStore = DataStoreService:GetDataStore("Level")
 local LevelUp = ReplicatedStorage.RemoteEvents:WaitForChild("LevelUp")
 local EraseData = ReplicatedStorage.RemoteEvents:WaitForChild("EraseData")
 local GivePet = ReplicatedStorage.RemoteEvents:WaitForChild("GivePet")
+local RewardPrompt = ReplicatedStorage.RemoteEvents:WaitForChild("RewardPrompt")
+local LastDataStoreValue = 14
+
 local PetConfig = require(script.Parent.PetConfig)
 Database = require(ReplicatedStorage.Modules.Data)
+
+local StarterDataSet =   {
+	[1] = 0, -- XP value
+	[2] = 1000, -- Maximum XP value
+	[3] = 1, -- level (redundant)
+	[4] =  { -- Pets owned (in order)
+	   [1] = "Cat"
+	},
+	[5] =  { -- Pet levels (in order)
+	   [1] =  {
+		  [1] = 1,
+		  [2] = 0,
+		  [3] = 20
+	   }
+	},
+	[6] = "Cat", -- Current pet open
+	[7] = 0, -- Total clicks
+	[8] = 1, -- Per click power
+	[9] = 0, -- Coins
+	[10] = "", -- Last reward given (Will contain a time/date)
+	[11] = "StarterEgg", -- Current egg open
+	[12] = 10, -- Gems
+	[13] =  { -- List of islands unlocked (Player will default spawn at highest unlocked)
+	   [1] =  {
+		  [1] = "StarterIsland"
+	   }
+	},
+	[14] =  { -- List of eggs unlocked
+	   [1] =  {
+		  [1] = "StarterEgg"
+	   }
+	},
+	[15] = "StarterIsland" -- Current map open
+ }
+
+function UpdateDataStore(PlayerDataJSON)
+	for i = 1, #StarterDataSet do
+		if not PlayerDataJSON[i] then
+			print("Filling in data: "..tostring(StarterDataSet[i]))
+			PlayerDataJSON[i] = StarterDataSet[i]
+		end
+	end
+	return PlayerDataJSON
+end
 
 game.Players.PlayerAdded:Connect(function(Player)
 	local DataTable = {}
@@ -48,14 +95,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 	Toggle.Value = false
 
 
-	--[[ Condensed data into single string ]]
-		--Called "PlayerData" under a folder called "Data"
-		--Full string:
-		--[691.1999999999999,100800,8,["Rabbit","Dog"],[[10,18,200],[7,19,140]],"Rabbit"]
-	--[[
-		1: XP value, 2: Maximum XP, 3: Level, 4: Pets obtained, 5: List in order of pet (XP, Level, MaxXP), 6: Current pet open 7:total clicks 8: per click 9: coins 10:last reward 11:current egg
-	]]
-	table.insert(DataTable,0)
+--[[ 	table.insert(DataTable,0)
 	table.insert(DataTable,ReplicatedStorage.Eggs:FindFirstChild("StarterEgg"):FindFirstChild("Difficulty").Value)
 	table.insert(DataTable,1)
 	table.insert(DataTable,{"Cat"})
@@ -67,20 +107,32 @@ game.Players.PlayerAdded:Connect(function(Player)
 	table.insert(DataTable,"") -- last reward time
 	table.insert(DataTable,"StarterEgg") -- Current egg
 	table.insert(DataTable,10) -- Gems
+	table.insert(DataTable,{{"StarterIsland"}}) -- islands unlocked
+	table.insert(DataTable,{{"StarterEgg"}}) -- eggs unlocked ]]
+
 	local PlayerData = Instance.new("StringValue", Data)
 	PlayerData.Name = "PlayerData"
-	PlayerData.Value = Database.Convert(DataTable)
+	PlayerData.Value = Database.Convert(StarterDataSet)
 
 	local success, PlayerDataStore = pcall(function()
 		return PlayerDataStore:GetAsync(Player)
 	end)
 
 	if success and PlayerDataStore ~= nil then
-		print(PlayerDataStore)
-		if type(PlayerDataStore)=="table" then PlayerDataStore=Database.Convert(PlayerDataStore) end
-		PlayerData.Value = PlayerDataStore
-		--LevelGui.BoosterButton.Text = "Level "..tostring(Database.Pull(PlayerDataStore)[3])
-		LevelGui.XPBarBackground.TextLabel.Text = "0/"..tostring(Database.Pull(PlayerDataStore)[2])
+		print("Loading player data for: "..Player.Name)
+		print("Player datastore contains "..tostring(#Database.Pull(PlayerDataStore)).." values")
+		if #Database.Pull(PlayerDataStore) == #StarterDataSet then
+			--PlayerDataStore=Database.Convert(PlayerDataStore)
+			PlayerData.Value = PlayerDataStore
+			print(Database.Pull(PlayerDataStore))
+		elseif #Database.Pull(PlayerDataStore) < #StarterDataSet then
+			print(Player.Name.." needs Datastore update, fixing...")
+			PlayerData.Value = Database.Convert(UpdateDataStore(Database.Pull(PlayerDataStore)))
+		else
+			print(Player.Name.." has the following data: "..tostring(PlayerData.Value))
+			print(Player.Name.." has a Datastore corruption, wiping...")
+			PlayerData.Value = Database.Convert(StarterDataSet)
+		end
 	else
 		print("Failed to load player data. Caused by new player entered or corrupted data.")
 	end
@@ -130,9 +182,19 @@ LevelUp.OnServerEvent:Connect(function(Player,CurrentPet,Data)
     local XP = tonumber(PlayerTable[1])
     local GoalXP = tonumber(PlayerTable[2])
 	local Level = tonumber(PlayerTable[3])
+
+	local NumberOfCoinsEarned = math. floor(math.random()*10+5 + 0.5)
+	local NumberOfGemsEarned = (1 or 0)
+
 	PlayerTable[1]=0
 	PlayerTable[2]=ReplicatedStorage.Eggs:FindFirstChild(PlayerTable[11]):FindFirstChild("Difficulty").Value --(GoalXP*Level)
 	PlayerTable[3]=Level+1
+
+	PlayerTable[9] = PlayerTable[9] + NumberOfCoinsEarned
+	PlayerTable[12] = PlayerTable[12] + NumberOfGemsEarned
+	
+	RewardPrompt:FireClient(Player,"CoinDisplay",NumberOfCoinsEarned)
+	RewardPrompt:FireClient(Player,"GemDisplay",NumberOfGemsEarned)
 
  	for i,v in pairs(PlayerTable[4]) do
 		if v == CurrentPet then
@@ -163,7 +225,7 @@ EraseData.OnServerEvent:Connect(function(Player)
     local XP = tonumber(PlayerTable[1])
     local GoalXP = tonumber(PlayerTable[2])
     local Level = tonumber(PlayerTable[3])
-	PlayerTable[3]=1
+--[[ 	PlayerTable[3]=1
 	PlayerTable[1]=0
 	PlayerTable[2]=ReplicatedStorage.Eggs:FindFirstChild("StarterEgg"):FindFirstChild("Difficulty").Value
 	PlayerTable[4]={"Cat"}
@@ -175,6 +237,8 @@ EraseData.OnServerEvent:Connect(function(Player)
 	PlayerTable[10]=""
 	PlayerTable[11]="StarterEgg"
 	PlayerTable[12]=10
-	PlayerData.Value = Database.Convert(PlayerTable)
+	PlayerTable[13]={{"StarterIsland"}}
+	PlayerTable[14]={{"StarterEgg"}}PlayerTable ]]
+	PlayerData.Value = Database.Convert(StarterDataSet)
 	PlayerDataStore:SetAsync(Player,PlayerData.Value)
 end)

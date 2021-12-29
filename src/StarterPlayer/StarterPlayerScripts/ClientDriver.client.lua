@@ -21,6 +21,8 @@ local GivePet = R.RemoteEvents:WaitForChild("GivePet")
 local BackToPlayerCamera = R.RemoteEvents:WaitForChild("BackToPlayerCamera")
 local TriggerPlayerPet = R.RemoteEvents:WaitForChild("TriggerPlayerPet")
 local EraseData = R.RemoteEvents:WaitForChild("EraseData")
+local RewardPrompt = R.RemoteEvents:WaitForChild("RewardPrompt")
+local PlayerPayload = R.RemoteEvents:WaitForChild("Data")
 
 --[[ Remote Functions ]]
 local GetAmount = R.RemoteFunctions:WaitForChild("GetAmount")
@@ -49,10 +51,12 @@ local Mouse = Player:GetMouse()
 --[[ Initial startup ]]
 PlayerHandler.MakePlayerInvisible(Player)
 Playing.Value = true
+game:GetService("StarterGui"):SetCore("ResetButtonCallback", false)
 
 local ClickCoolDown = false
 spawn(function()ChangeGui.UpdateCoins()end)
 spawn(function()ChangeGui.UpdateGems()end)
+
 
 spawn(function() -- Detect around daily reward
     while wait(0.1) do
@@ -65,12 +69,16 @@ spawn(function() -- Detect around daily reward
     end
 end)
 
-ChangeGui.PromptRandomViewport(R:WaitForChild("GemDisplay"),R:WaitForChild("DropFrame"),10,1,1)
+--ChangeGui.PromptRandomViewport(R:WaitForChild("GemDisplay"),R:WaitForChild("DropFrame"),10,1,1)
 
 --[[ spawn(function()
     local Coin = R:WaitForChild("CoinDisplay"):Clone()
     InventoryHandler.ViewPet(Coin,MainGui.PromptCoins.CoinFrame)
 end) ]]
+
+RewardPrompt.OnClientEvent:Connect(function(Type,Amount)
+    ChangeGui.PromptRandomViewport(R:WaitForChild(Type),R:WaitForChild("DropFrame"),Amount,1,0.3)
+end)
 
 function SetCoolDown()
     ClickCoolDown = true
@@ -89,7 +97,6 @@ function ClickActions()
     Amount=CallBackList[1]
     PlayerData.Value = CallBackList[2]
     --print(CallBackList[2])
-    
     local PlayerTable = Database.Pull(PlayerData.Value)
     local XP,GoalXP,Level,Clicks = tonumber(PlayerTable[1]),tonumber(PlayerTable[2]),tonumber(PlayerTable[3]),tonumber(PlayerTable[7])
     PlayerTable[1] = XP + Amount
@@ -97,7 +104,7 @@ function ClickActions()
     PlayerData.Value = Database.Convert(PlayerTable)
     ChangeGui.AddClick(tonumber(PlayerTable[7]))
     if CallBackList[3] == true then
-        print("Pet level up")
+        --print("Pet level up")
         spawn(function() ChangeGui.PetLevelUp() end)
     end
     if XP <= GoalXP then
@@ -106,6 +113,7 @@ function ClickActions()
         XPText.Text = tostring(GoalXP).."/"..tostring(GoalXP)
     end
     --LevelText.Text = "Level: "..tostring(Level)
+    PlayerPayload:FireServer(PlayerData.Value)
     spawn(function()ChangeGui.AddXP(Amount)end) --change
     ChangeGui.TweenLevelBar(Bar,XP,GoalXP,0.25)
     ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
@@ -116,7 +124,7 @@ function OnPlayerClick()
     if Playing.Value == true and PlayerView.Value == false and ClickCoolDown == false then
         ClickActions()
     else
-        print("not firing")
+        --print("not firing")
     end
 end
 
@@ -231,4 +239,14 @@ end)
 
 MainGui.ResetStatsButton.MouseButton1Click:Connect(function()
     EraseData:FireServer()
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if Mouse.Target then
+		if Mouse.Target.Name == "DoorPart1" then
+			game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").Enabled = true
+		else
+			game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").Enabled = false
+		end
+	end
 end)

@@ -10,6 +10,8 @@ CameraEvent = ReplicatedStorage.RemoteEvents:WaitForChild("CameraMode")
 BackToPlayerCamera = ReplicatedStorage.RemoteEvents:WaitForChild("BackToPlayerCamera")
 TriggerPlayerPet = ReplicatedStorage.RemoteEvents:WaitForChild("TriggerPlayerPet")
 RemovePetInGame = ReplicatedStorage.RemoteEvents:WaitForChild("RemovePetInGame")
+local RewardPrompt = ReplicatedStorage.RemoteEvents:WaitForChild("RewardPrompt")
+Data = ReplicatedStorage.RemoteEvents:WaitForChild("Data")
 PetConfig = require(script.Parent.PetConfig)
 --DeterminePet = PetConfig.DeterminePet
 GetAmount = ReplicatedStorage.RemoteFunctions:WaitForChild("GetAmount")
@@ -55,6 +57,11 @@ TriggerPlayerPet.OnServerEvent:Connect(function(Player,Pet) -- Move to petconfig
     PetConfig.ThreadPet(Pet,Player)
 end)
 
+Data.OnServerEvent:Connect(function(Player,Data) -- Severe security bug, temp patch
+    --print("Payload complete")
+    Player:WaitForChild("Data").PlayerData.Value = Data
+end)
+
 RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)
     local Pet = game.Workspace.PlayerPets:GetChildren()
     for _,v in pairs(Pet) do
@@ -76,8 +83,11 @@ GetAmount.OnServerInvoke=function(Player,Level,Data)
     for i,v in pairs(PlayerData[5]) do
         PlayerData[5][i][2] = PlayerData[5][i][2]+(1/(i/2))
         increment = increment + PlayerData[5][i][1]
-        print("Pet level: "..tostring(PlayerData[5][i][1]))
+        --print("Pet level: "..tostring(PlayerData[5][i][1]))
         if PlayerData[5][i][2] >= PlayerData[5][i][3] then
+
+            RewardPrompt:FireClient(Player,"CoinDisplay",1)
+            PlayerData[9] = PlayerData[9] + 1
             PlayerData[5][i][1] = PlayerData[5][i][1]+1
             PlayerData[5][i][2] = 0
             PlayerData[5][i][3] = PlayerData[5][i][1]*20
