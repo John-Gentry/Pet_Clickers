@@ -116,7 +116,8 @@ end
 CheckPurchase.OnServerInvoke=function(Player,type,amount,deduction, type2, payload)
     local PlayerData = Database.Pull(Player:FindFirstChild("Data").PlayerData.Value)
     if tonumber(PlayerData[type]) and deduction then
-        if PlayerData[type] > amount then
+        print(PlayerData[type])
+        if PlayerData[type] >= amount then
             PlayerData[type] = PlayerData[type] - amount
             if type2 and payload then
                 if type2 == 13 then

@@ -47,7 +47,7 @@ local PlayerView = Data:WaitForChild("PlayerView")
 --[[ Various Objects ]]
 local ClientObjects = game.Workspace.ClientObjects
 local EggPosition = EggModule.GetPosition(Database.Pull(Data:FindFirstChild("PlayerData").Value))
---local Egg = EggModule.new("StarterEgg", EggPosition)
+
 local Pet = nil
 local Mouse = Player:GetMouse()
 
@@ -108,7 +108,6 @@ function ClickActions()
     --print("firing")
     Data = Player:FindFirstChild("Data")
     local PlayerData = Data:FindFirstChild("PlayerData")
-    local Playing = Data:WaitForChild("Playing")
     spawn(function()SetCoolDown()end)
 
     local CallBackList = GetAmount:InvokeServer(Level,PlayerData.Value)--[[ This here is causing problems ]]
@@ -139,7 +138,9 @@ function ClickActions()
 end
 
 function OnPlayerClick()
+    local Playing = Data:FindFirstChild("Playing")
     if Playing.Value == true and PlayerView.Value == false and ClickCoolDown == false then
+        print("Playing value: "..tostring(Playing.Value))
         ClickActions()
     else
         --print("not firing")
@@ -177,12 +178,15 @@ GivePet.OnClientEvent:Connect(function(Pet)
         local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
         Pet = PetModule.new(CurrentPet.Value,EggPosition)
         ChangeGui.PromptPet(Pet.Name)
-        UserInputService.InputBegan:Connect(function(input)
-            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and Playing.Value == false and Pet ~= nil and PlayerView.Value == false and EggModule.Check("StarterEgg") then
+        StartInput = UserInputService.InputBegan:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and Playing.Value == false and Pet ~= nil and PlayerView.Value == false and EggModule.Check() then
+                --print("this function fires")
+                print("give pet function firing")
                 PetModule:DestroyPets()
                 ChangeGui.CloseContinuePrompt()
-                EggModule.new("StarterEgg",EggPosition)
+                EggModule.new(Database.Pull(Data:FindFirstChild("PlayerData").Value)[11],EggPosition)
                 Playing.Value = true
+                StartInput:Disconnect()
             end
         end)
     end
@@ -205,7 +209,7 @@ MainGui.WalkPetButton.MouseButton1Click:Connect(function()
         Playing.Value = true
         PlayerHandler.MakePlayerInvisible(Player)
         PlayerView.Value = false
-        EggModule.new("StarterEgg",EggPosition)
+        EggModule.new(Database.Pull(Data:FindFirstChild("PlayerData").Value)[11],EggPosition)
         --MainGui.WalkPetButton.Text = "Walk your pet!"
     end
 end)

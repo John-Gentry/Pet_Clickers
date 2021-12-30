@@ -189,7 +189,7 @@ LevelUp.OnServerEvent:Connect(function(Player,CurrentPet,Data)
 	local NumberOfGemsEarned = (1 or 0)
 
 	PlayerTable[1]=0
-	PlayerTable[2]=ReplicatedStorage.Eggs:FindFirstChild(PlayerTable[11]):FindFirstChild("Difficulty").Value --(GoalXP*Level)
+	PlayerTable[2]=ReplicatedStorage.Eggs:FindFirstChild(PlayerTable[11]).Head:FindFirstChild("Difficulty").Value --(GoalXP*Level)
 	PlayerTable[3]=Level+1
 
 	PlayerTable[9] = PlayerTable[9] + NumberOfCoinsEarned

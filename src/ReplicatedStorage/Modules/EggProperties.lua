@@ -7,6 +7,8 @@ local TweenService = game:GetService("TweenService")
 local Database = require(R.Modules.Data)
 
 function randomdirection(Egg)
+    --print("random direction")
+    Egg = Egg:WaitForChild("Head")
     local Player = game.Players.LocalPlayer
     local Data = Player:FindFirstChild("Data")
     local JSON = Database.Pull(Data:FindFirstChild("PlayerData").Value)
@@ -42,11 +44,14 @@ function EggProperties.HitEgg()
 
     if game.Players.LocalPlayer.Data.Toggle.Value == false then
         game.Players.LocalPlayer.Data.Toggle.Value = true
-        local Egg = ClientObjects:WaitForChild(game.Players.LocalPlayer.Data.CurrentEgg.Value)
+        local Egg = ClientObjects:FindFirstChild(JSON[11])
+        print(Egg)
         if Egg ~= nil then
-            Egg.CFrame = SpawnEggLocation
-            local Pos = Egg.CFrame
+            Egg:WaitForChild("Head").CFrame = SpawnEggLocation
+            local Pos = Egg:FindFirstChild("Head").CFrame
             randomdirection(Egg)
+            game.Players.LocalPlayer.Data.Toggle.Value = false
+        else
             game.Players.LocalPlayer.Data.Toggle.Value = false
         end
     end

@@ -102,21 +102,22 @@ function ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
     local Playing = Player:FindFirstChild("Data"):WaitForChild("Playing")
     local CurrentPet = Player:FindFirstChild("Data"):WaitForChild("CurrentPet")
     if XP >= GoalXP and Playing.Value == true then
-        print("bar size changed")
+        --print("bar size changed")
         Playing.Value = false
         Bar:TweenSize(UDim2.new(1, 0, 0.25, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0,true, callback)
-        local egg = ClientObjects:GetChildren()[1]
+        local egg = ClientObjects:GetChildren()[1]:FindFirstChild("Head")
         local Up = TweenInfo.new(1,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
         
         x=TweenService:Create(egg,Up,{CFrame = CFrame.new(MainX, SpawnEggLocation.Y+5, MainZ)})
         x:Play()
         x.Completed:Wait()
         if egg ~= nil and egg:FindFirstChild("PointLight")~= nil then
-            repeat egg.PointLight.Brightness = egg.PointLight.Brightness + 1 wait(0.05) until egg.PointLight.Brightness >= 40
-            egg:Destroy()
+            repeat egg:WaitForChild("PointLight").Brightness = egg:WaitForChild("PointLight").Brightness + 1 wait(0.05) until egg.PointLight.Brightness >= 40
+            egg.Parent:Destroy()
             --[[ Level.Value = Level.Value+1 ]]
             ReplicatedStorage.RemoteEvents.LevelUp:FireServer(CurrentPet.Value,Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value)
         end
+
     end
 end
 
