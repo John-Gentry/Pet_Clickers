@@ -1,12 +1,18 @@
 --This script animates the egg after every click
 
 EggProperties = {}
-SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
+local R = game:GetService("ReplicatedStorage")
 local ClientObjects = game.Workspace.ClientObjects
 local TweenService = game:GetService("TweenService")
-local MainX = SpawnEggLocation.X
-local MainZ = SpawnEggLocation.Z
+local Database = require(R.Modules.Data)
+
 function randomdirection(Egg)
+    local Player = game.Players.LocalPlayer
+    local Data = Player:FindFirstChild("Data")
+    local JSON = Database.Pull(Data:FindFirstChild("PlayerData").Value)
+    local SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild(JSON[15].."_EGGPOS").Position
+    local MainX = SpawnEggLocation.X
+    local MainZ = SpawnEggLocation.Z
     local Up = TweenInfo.new(0.2,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
     local Down = TweenInfo.new(1,Enum.EasingStyle.Bounce,Enum.EasingDirection.Out,0,false, 0)
     local DownRotate = TweenInfo.new(2,Enum.EasingStyle.Elastic,Enum.EasingDirection.Out,0,false, 0)
@@ -29,10 +35,16 @@ function randomdirection(Egg)
 end
 
 function EggProperties.HitEgg()
+    local Player = game.Players.LocalPlayer
+    local Data = Player:FindFirstChild("Data")
+    local JSON = Database.Pull(Data:FindFirstChild("PlayerData").Value)
+    local SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild(JSON[15].."_EGGPOS").CFrame
+
     if game.Players.LocalPlayer.Data.Toggle.Value == false then
         game.Players.LocalPlayer.Data.Toggle.Value = true
         local Egg = ClientObjects:WaitForChild(game.Players.LocalPlayer.Data.CurrentEgg.Value)
         if Egg ~= nil then
+            Egg.CFrame = SpawnEggLocation
             local Pos = Egg.CFrame
             randomdirection(Egg)
             game.Players.LocalPlayer.Data.Toggle.Value = false

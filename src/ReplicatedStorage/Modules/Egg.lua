@@ -2,8 +2,8 @@
 Egg = {}
 Egg._index = Egg
 
-function Egg.GetPosition()
-    return game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
+function Egg.GetPosition(JSON)
+    return game.Workspace:WaitForChild("DebugObjects"):WaitForChild(JSON[15].."_EGGPOS").Position
 end
 
 function Egg.new(Type,EggPosition)

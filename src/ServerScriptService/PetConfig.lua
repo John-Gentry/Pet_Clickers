@@ -51,6 +51,12 @@ end
 --[[ Puts pet movement into a thread, so it runs independently of the script itself.
 This will be changed into some sort of tween very soon.*]]
 function PetConfig.ThreadPet(Pet,Player)
+    local PhysicsService = game:GetService("PhysicsService")
+    for i,v in pairs(Pet:GetChildren()) do
+        if v:IsA("BasePart") then
+            PhysicsService:SetPartCollisionGroup(v, "Pets")
+        end
+    end
     local character = Player.Character
     local humRootPart = character:WaitForChild("HumanoidRootPart")
     Pet:FindFirstChild("Head").CFrame = humRootPart.CFrame
@@ -77,7 +83,7 @@ function PetConfig.ThreadPet(Pet,Player)
                 
                 while wait() do
                     if bodyGyro.CFrame ~= humRootPart.CFrame then
-                        bodyPos.Position = humRootPart.Position + Vector3.new(2, -1.9, 3)
+                        bodyPos.Position = humRootPart.Position + Vector3.new(2, -1.5, 3)
                         bodyGyro.CFrame = humRootPart.CFrame
                         if not RunningTrack.IsPlaying == true then
                             RunningTrack:Play()

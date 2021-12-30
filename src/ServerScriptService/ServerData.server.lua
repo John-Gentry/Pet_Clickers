@@ -1,5 +1,6 @@
 local DataStoreService = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local MarketplaceService = game:GetService("MarketplaceService")
 local XPDataStore = DataStoreService:GetDataStore("XP")
 local PlayerDataStore = DataStoreService:GetDataStore("PlayerData")
 local GoalXPDataStore = DataStoreService:GetDataStore("GoalXP")
@@ -7,6 +8,7 @@ local LevelDataStore = DataStoreService:GetDataStore("Level")
 local LevelUp = ReplicatedStorage.RemoteEvents:WaitForChild("LevelUp")
 local EraseData = ReplicatedStorage.RemoteEvents:WaitForChild("EraseData")
 local GivePet = ReplicatedStorage.RemoteEvents:WaitForChild("GivePet")
+
 local RewardPrompt = ReplicatedStorage.RemoteEvents:WaitForChild("RewardPrompt")
 local LastDataStoreValue = 14
 
@@ -34,7 +36,7 @@ local StarterDataSet =   {
 	[10] = "", -- Last reward given (Will contain a time/date)
 	[11] = "StarterEgg", -- Current egg open
 	[12] = 10, -- Gems
-	[13] =  { -- List of islands unlocked (Player will default spawn at highest unlocked)
+	[13] =  { -- List of islands unlocked (Player will default spawn at highest unlocked) (StarterIsland, Mystic Jungle)
 	   [1] =  {
 		  [1] = "StarterIsland"
 	   }
@@ -87,7 +89,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 	--[[ Redundant variable I need to remove later ]]
 	local PlayerView = Instance.new("BoolValue", Data)
 	PlayerView.Name = "PlayerView"
-	PlayerView.Value = false
+	PlayerView.Value = true
 
 	--[[ To be removed ]]
 	local Toggle = Instance.new("BoolValue", Data)

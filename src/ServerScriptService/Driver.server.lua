@@ -15,9 +15,17 @@ Data = ReplicatedStorage.RemoteEvents:WaitForChild("Data")
 PetConfig = require(script.Parent.PetConfig)
 --DeterminePet = PetConfig.DeterminePet
 GetAmount = ReplicatedStorage.RemoteFunctions:WaitForChild("GetAmount")
+CheckPurchase = ReplicatedStorage.RemoteFunctions:WaitForChild("CheckPurchase")
 local Database = require(ReplicatedStorage.Modules.Data)
 Players.PlayerAdded:Connect(function(Player)
-    CameraEvent:FireClient(Player,true)
+    local Character = Player.CharacterAdded:Wait() or Player.Character
+    --CameraEvent:FireClient(Player,true)
+    local PhysicsService = game:GetService("PhysicsService")
+    for i,v in pairs(Character:GetChildren()) do
+        if v:IsA("BasePart") then
+            PhysicsService:SetPartCollisionGroup(v, "Players")
+        end
+    end
 end)
 
 BackToPlayerCamera.OnServerEvent:Connect(function(Player)
@@ -69,7 +77,8 @@ RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)
             v:Destroy()
         end
     end
-    CameraEvent:FireClient(Player,true)
+    local JSON = Database.Pull(Player:FindFirstChild("Data"):FindFirstChild("PlayerData").Value)
+    CameraEvent:FireClient(Player,true,game.Workspace:WaitForChild("DebugObjects"):WaitForChild(JSON[15].."_EGGPOS"))
 end)
 
 GetAmount.OnServerInvoke=function(Player,Level,Data)
@@ -104,3 +113,21 @@ GetAmount.OnServerInvoke=function(Player,Level,Data)
     return {increment,Database.Convert(PlayerData),LevelUp}
 end
 
+CheckPurchase.OnServerInvoke=function(Player,type,amount,deduction, type2, payload)
+    local PlayerData = Database.Pull(Player:FindFirstChild("Data").PlayerData.Value)
+    if tonumber(PlayerData[type]) and deduction then
+        if PlayerData[type] > amount then
+            PlayerData[type] = PlayerData[type] - amount
+            if type2 and payload then
+                if type2 == 13 then
+                    PlayerData[type2][#PlayerData[type2]+1]=payload
+                    PlayerData[15] = payload
+                end
+            end
+            Player:FindFirstChild("Data").PlayerData.Value = Database.Convert(PlayerData)
+            return true
+        else
+            return false
+        end
+    end
+end

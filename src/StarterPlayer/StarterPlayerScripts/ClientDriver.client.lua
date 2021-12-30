@@ -23,13 +23,16 @@ local TriggerPlayerPet = R.RemoteEvents:WaitForChild("TriggerPlayerPet")
 local EraseData = R.RemoteEvents:WaitForChild("EraseData")
 local RewardPrompt = R.RemoteEvents:WaitForChild("RewardPrompt")
 local PlayerPayload = R.RemoteEvents:WaitForChild("Data")
+local ProductPurchase = R.RemoteEvents:WaitForChild("ProductPurchase")
 
 --[[ Remote Functions ]]
 local GetAmount = R.RemoteFunctions:WaitForChild("GetAmount")
+local CheckPurchase = R.RemoteFunctions:WaitForChild("CheckPurchase")
 
 --[[ Gui variables ]]
 local PlayerGui = Player.PlayerGui
 local MainGui = PlayerGui:WaitForChild("MainGui")
+local Shop = PlayerGui:WaitForChild("Shop")
 local Equip = PlayerGui:WaitForChild("Inventory").InventoryFrame.PetHolder.Equip
 
 local XPText = MainGui.Level.XPBarBackground.TextLabel
@@ -43,15 +46,30 @@ local PlayerView = Data:WaitForChild("PlayerView")
 
 --[[ Various Objects ]]
 local ClientObjects = game.Workspace.ClientObjects
-local EggPosition = EggModule.GetPosition()
-local Egg = EggModule.new("StarterEgg", EggPosition)
+local EggPosition = EggModule.GetPosition(Database.Pull(Data:FindFirstChild("PlayerData").Value))
+--local Egg = EggModule.new("StarterEgg", EggPosition)
 local Pet = nil
 local Mouse = Player:GetMouse()
 
 --[[ Initial startup ]]
-PlayerHandler.MakePlayerInvisible(Player)
-Playing.Value = true
-game:GetService("StarterGui"):SetCore("ResetButtonCallback", false)
+--PlayerHandler.MakePlayerInvisible(Player)
+Playing.Value = false
+game:GetService("StarterGui"):SetCore("ResetButtonCallback", false) -- turns off reset button
+
+function SpawnToCurrentMap()
+    local PlayerData = Data:FindFirstChild("PlayerData")
+    local JSON = Database.Pull(PlayerData.Value)
+    
+    if JSON[15] == "StarterIsland" then
+        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("StarterTeleport").CFrame
+    elseif JSON[15] == "Mystic Jungle" then
+        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("JungleTeleport").CFrame
+    end
+    local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
+    TriggerPlayerPet:FireServer(CurrentPet.Value)
+end
+SpawnToCurrentMap()
+---292.799, -362.888, -334.824
 
 local ClickCoolDown = false
 spawn(function()ChangeGui.UpdateCoins()end)
@@ -151,6 +169,7 @@ end)
 
 --[[ Below needs to be changed so that it's mainly handled by the PetHandler module *]]
 GivePet.OnClientEvent:Connect(function(Pet)
+    EggPosition = EggModule.GetPosition(Database.Pull(Data:FindFirstChild("PlayerData").Value))
     local Playing = Data:WaitForChild("Playing")
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     if PlayerView.Value == false then
@@ -172,6 +191,7 @@ end)
 --[[ Activates when player clicks the "walk pet" button. Also when they click "hatch egg" *]]
 
 MainGui.WalkPetButton.MouseButton1Click:Connect(function()
+    EggPosition = EggModule.GetPosition(Database.Pull(Data:FindFirstChild("PlayerData").Value))
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     if (Playing.Value == true or PlayerView.Value == false) then
         for _,v in ipairs(ClientObjects:GetChildren()) do v:Destroy() end
@@ -242,11 +262,78 @@ MainGui.ResetStatsButton.MouseButton1Click:Connect(function()
 end)
 
 UserInputService.InputChanged:Connect(function(input)
+    local PlayerData = Data:FindFirstChild("PlayerData")
 	if Mouse.Target then
-		if Mouse.Target.Name == "DoorPart1" then
+		if Mouse.Target.Name == "DoorPart1" then -- ReturnStarter
+            local purchased = false
 			game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").Enabled = true
+            local JSON = Database.Pull(PlayerData.Value)
+            for i,v in pairs(JSON[13]) do
+                if v == "Mystic Jungle" then
+                    purchased = true
+                end
+            end
+            if purchased then
+                game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").CoinText.Text = "Owned!"
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.E) then
+                print("pressed e")
+                if not purchased then
+                    if CheckPurchase:InvokeServer(9,300, true,13,"Mystic Jungle") then
+                        print("purchased!")
+
+                        PlayerPayload:FireServer(PlayerData.Value)
+                        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("JungleTeleport").CFrame
+                    end
+                else
+                    local JSON = Database.Pull(PlayerData.Value)
+                    JSON[15] = "Mystic Jungle"
+                    PlayerData.Value = Database.Convert(JSON)
+                    PlayerPayload:FireServer(PlayerData.Value)
+                    Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("JungleTeleport").CFrame
+                end
+            end
+        elseif Mouse.Target.Name == "ReturnStarter" then
+            local Current = Mouse.Target
+            Current:FindFirstChild("BillboardGui").Enabled = true
+            if UserInputService:IsKeyDown(Enum.KeyCode.E) then
+                local JSON = Database.Pull(PlayerData.Value)
+                JSON[15] = "StarterIsland"
+                PlayerData.Value = Database.Convert(JSON)
+                PlayerPayload:FireServer(PlayerData.Value)
+                Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("StarterTeleport").CFrame
+
+            end
+            wait(2)
+            Current:FindFirstChild("BillboardGui").Enabled = false
+
 		else
 			game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").Enabled = false
 		end
 	end
+end)
+
+--[[ Below is for the shop handling ]]
+Shop.MainFrame.ScrollingFrame.Product1.BuyButton.MouseButton1Click:Connect(function() --[[ 100 coins, 50 robux, 1231214711]]
+    ProductPurchase:FireServer(1231214711)
+end)
+
+Shop.MainFrame.ScrollingFrame.Product2.BuyButton.MouseButton1Click:Connect(function() --[[ 300 coins, 100 robux, 1231214864]]
+    ProductPurchase:FireServer(1231214864)
+end)
+
+Shop.MainFrame.ScrollingFrame.Product3.BuyButton.MouseButton1Click:Connect(function() --[[ 1000 coins, 200 robux, 1231214865]]
+    ProductPurchase:FireServer(1231214865)
+end)
+
+Shop.MainFrame.ScrollingFrame.Product4.BuyButton.MouseButton1Click:Connect(function() --[[ 100 gems, 100 robux, 1231215065]]
+    ProductPurchase:FireServer(1231215065)
+end)
+
+Shop.MainFrame.ScrollingFrame.Product5.BuyButton.MouseButton1Click:Connect(function() --[[ 300 gems, 250 robux, 1231215064]]
+    ProductPurchase:FireServer(1231215064)
+end)
+
+Shop.MainFrame.ScrollingFrame.Product6.BuyButton.MouseButton1Click:Connect(function() --[[ 500 gems, 450 robux, 1231215063]]
+    ProductPurchase:FireServer(1231215063)
 end)

@@ -1,13 +1,17 @@
 ChangeGui = {}
+local ReplicatedStorage = game.ReplicatedStorage
+local Database = require(ReplicatedStorage.Modules.Data)
 local ClientObjects = game.Workspace.ClientObjects
-SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation").Position
+local Player = game.Players.LocalPlayer
+local Data = Player:WaitForChild("Data")
+local JSON = Database.Pull(Data:WaitForChild("PlayerData").Value)
+local SpawnEggLocation = game.Workspace:WaitForChild("DebugObjects"):WaitForChild(JSON[15].."_EGGPOS").Position
+
 local MainX = SpawnEggLocation.X
 local MainZ = SpawnEggLocation.Z
 local Player = game.Players.LocalPlayer
 local MainGui = Player.PlayerGui:WaitForChild("MainGui")
-local ReplicatedStorage = game.ReplicatedStorage
 local TweenService = game:GetService("TweenService")
-local Database = require(ReplicatedStorage.Modules.Data)
 
 
 function ChangeGui.PromptRandomViewport(Model,viewportFrame,amount,interations,rotationspeed) -- For coin rain, gem rain
@@ -101,7 +105,7 @@ function ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
         print("bar size changed")
         Playing.Value = false
         Bar:TweenSize(UDim2.new(1, 0, 0.25, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0,true, callback)
-        local egg = ClientObjects:WaitForChild("StarterEgg")
+        local egg = ClientObjects:GetChildren()[1]
         local Up = TweenInfo.new(1,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
         
         x=TweenService:Create(egg,Up,{CFrame = CFrame.new(MainX, SpawnEggLocation.Y+5, MainZ)})

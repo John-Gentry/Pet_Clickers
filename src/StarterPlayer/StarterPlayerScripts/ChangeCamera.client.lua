@@ -9,17 +9,17 @@ local Offset = CFrame.new(0,0,10)
 local active = true
 local ClientObjects = game.Workspace.ClientObjects
 
-CameraEvent.OnClientEvent:Connect(function(bool)
+CameraEvent.OnClientEvent:Connect(function(bool,pos)
     local Camera = Workspace.CurrentCamera
     Camera.CameraType = "Scriptable"
-    Camera.Focus = Point
-    Camera.CFrame = Point
-    Camera.CameraSubject = game.Workspace:WaitForChild("DebugObjects"):WaitForChild("EggPositionLocation")
+    Camera.Focus = pos.CFrame
+    Camera.CFrame = pos.CFrame
+    Camera.CameraSubject = pos
     active = bool
     while active do
         for i = 1,3600 do
             if not active then break end
-            Camera.CFrame = Point * CFrame.Angles(0,math.rad(i/10),0) * Offset
+            Camera.CFrame = pos.CFrame * CFrame.Angles(0,math.rad(i/10),0) * Offset
             wait()
         end
     end
