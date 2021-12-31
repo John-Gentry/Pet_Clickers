@@ -116,6 +116,11 @@ end
 CheckPurchase.OnServerInvoke=function(Player,type,amount,deduction, type2, payload)
     local PlayerData = Database.Pull(Player:FindFirstChild("Data").PlayerData.Value)
     if tonumber(PlayerData[type]) and deduction then
+        for i,v in pairs(PlayerData[type2]) do
+            if v == payload then
+                return false
+            end
+        end
         print(PlayerData[type])
         if PlayerData[type] >= amount then
             PlayerData[type] = PlayerData[type] - amount
@@ -124,8 +129,19 @@ CheckPurchase.OnServerInvoke=function(Player,type,amount,deduction, type2, paylo
                     PlayerData[type2][#PlayerData[type2]+1]=payload
                     PlayerData[15] = payload
                 end
+                if type2 == 4 then
+                    PlayerData[type2][#PlayerData[type2]+1]=payload
+                    --PlayerData[6] = payload
+                end
             end
             Player:FindFirstChild("Data").PlayerData.Value = Database.Convert(PlayerData)
+            return true
+        else
+            return false
+        end
+    elseif tonumber(PlayerData[type]) and not deduction then
+        if PlayerData[type] >= amount then
+            PlayerData[type] = PlayerData[type] - amount
             return true
         else
             return false

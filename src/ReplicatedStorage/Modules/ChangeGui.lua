@@ -104,7 +104,7 @@ function ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
     if XP >= GoalXP and Playing.Value == true then
         --print("bar size changed")
         Playing.Value = false
-        Bar:TweenSize(UDim2.new(1, 0, 0.25, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0,true, callback)
+        Bar:TweenSize(UDim2.new(1, 0, 1, 0),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0,true, callback)
         local egg = ClientObjects:GetChildren()[1]:FindFirstChild("Head")
         local Up = TweenInfo.new(1,Enum.EasingStyle.Linear,Enum.EasingDirection.Out,0,false, 0)
         

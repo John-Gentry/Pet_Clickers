@@ -33,11 +33,12 @@ local CheckPurchase = R.RemoteFunctions:WaitForChild("CheckPurchase")
 local PlayerGui = Player.PlayerGui
 local MainGui = PlayerGui:WaitForChild("MainGui")
 local Shop = PlayerGui:WaitForChild("Shop")
+local PetShop = PlayerGui:WaitForChild("PetShop")
 local Equip = PlayerGui:WaitForChild("Inventory").InventoryFrame.PetHolder.Equip
 
 local XPText = MainGui.Level.XPBarBackground.TextLabel
 --local LevelText = MainGui.Level.BoosterButton
-local Bar = MainGui.Level.XPBar
+local Bar = MainGui.Level.XPBarBackground.XPBar
 
 --[[ Player data ]]
 local Data = Player:FindFirstChild("Data")
@@ -57,7 +58,7 @@ Playing.Value = false
 game:GetService("StarterGui"):SetCore("ResetButtonCallback", false) -- turns off reset button
 
 function SpawnToCurrentMap()
-    local PlayerData = Data:FindFirstChild("PlayerData")
+    local PlayerData = Data:WaitForChild("PlayerData")
     local JSON = Database.Pull(PlayerData.Value)
     
     if JSON[15] == "StarterIsland" then
@@ -80,12 +81,19 @@ spawn(function() -- Detect around daily reward
     while wait(0.1) do
 
         local HRP = Character:WaitForChild("HumanoidRootPart")
-        local magnitude = (Vector3.new(-221.464, -359.67, -291.814) - HRP.Position).Magnitude
-        if magnitude < 10 then
+        local a = (Vector3.new(-221.464, -359.67, -291.814) - HRP.Position).Magnitude
+        local b = (Vector3.new(-264.543, -363.198, -239.735) - HRP.Position).Magnitude
+        if a < 10 then
             print("true")
+        elseif b < 10 then
+            PlayerGui:WaitForChild("PetShop").Enabled = true
+        else
+            PlayerGui:WaitForChild("PetShop").Enabled = false
         end
     end
 end)
+
+
 
 --ChangeGui.PromptRandomViewport(R:WaitForChild("GemDisplay"),R:WaitForChild("DropFrame"),10,1,1)
 
@@ -132,7 +140,7 @@ function ClickActions()
     --LevelText.Text = "Level: "..tostring(Level)
     PlayerPayload:FireServer(PlayerData.Value)
     spawn(function()ChangeGui.AddXP(Amount)end) --change
-    ChangeGui.TweenLevelBar(Bar,XP,GoalXP,0.25)
+    ChangeGui.TweenLevelBar(Bar,XP,GoalXP,1)
     ChangeGui.DetermineLevel(Bar,XP,GoalXP,Level)
     EggProperties.HitEgg()
 end
@@ -341,3 +349,22 @@ end)
 Shop.MainFrame.ScrollingFrame.Product6.BuyButton.MouseButton1Click:Connect(function() --[[ 500 gems, 450 robux, 1231215063]]
     ProductPurchase:FireServer(1231215063)
 end)
+
+--[[ Below is for pet shop handling ]]
+
+local petframe = PetShop.MainFrame.ScrollingFrame
+
+function PetShopPurchase(type,amount,gui)
+    local PlayerData = Data:FindFirstChild("PlayerData")
+    if CheckPurchase:InvokeServer(12,amount, true,4,type) then
+        print("Purchased!")
+        PlayerPayload:FireServer(PlayerData.Value)
+        gui.Text = "Purchased!"
+    end
+end
+
+petframe.Product1.BuyButton.MouseButton1Click:Connect(function() PetShopPurchase("Werewolf",50,petframe.Product1.BuyButton)end)
+petframe.Product2.BuyButton.MouseButton1Click:Connect(function() PetShopPurchase("Manticore",100,petframe.Product2.BuyButton)end)
+petframe.Product3.BuyButton.MouseButton1Click:Connect(function() PetShopPurchase("Angel",500,petframe.Product3.BuyButton)end)
+
+--petframe.Product1.BuyButton.TouchTap:Connect(function() print("working") PetShopPurchase("Werewolf",50,petframe.Product1.BuyButton)end)

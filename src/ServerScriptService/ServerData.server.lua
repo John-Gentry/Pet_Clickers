@@ -117,19 +117,19 @@ game.Players.PlayerAdded:Connect(function(Player)
 	PlayerData.Value = Database.Convert(StarterDataSet)
 
 	local success, PlayerDataStore = pcall(function()
-		return PlayerDataStore:GetAsync(Player)
+		return PlayerDataStore:GetAsync(Player.UserId)
 	end)
 
 	if success and PlayerDataStore ~= nil then
 		print("Loading player data for: "..Player.Name)
 		print("Player datastore contains "..tostring(#Database.Pull(PlayerDataStore)).." values")
-		if #Database.Pull(PlayerDataStore) == #StarterDataSet then
+		if #PlayerDataStore == #StarterDataSet then
 			--PlayerDataStore=Database.Convert(PlayerDataStore)
-			PlayerData.Value = PlayerDataStore
-			print(Database.Pull(PlayerDataStore))
-		elseif #Database.Pull(PlayerDataStore) < #StarterDataSet then
+			PlayerData.Value = Database.Convert(PlayerDataStore)
+			print(PlayerDataStore)
+		elseif #PlayerDataStore < #StarterDataSet then
 			print(Player.Name.." needs Datastore update, fixing...")
-			PlayerData.Value = Database.Convert(UpdateDataStore(Database.Pull(PlayerDataStore)))
+			PlayerData.Value = Database.Convert(UpdateDataStore(PlayerDataStore))
 		else
 			print(Player.Name.." has the following data: "..tostring(PlayerData.Value))
 			print(Player.Name.." has a Datastore corruption, wiping...")
@@ -137,6 +137,7 @@ game.Players.PlayerAdded:Connect(function(Player)
 		end
 	else
 		print("Failed to load player data. Caused by new player entered or corrupted data.")
+		PlayerData.Value = Database.Convert(StarterDataSet)
 	end
 end)
 
@@ -145,7 +146,7 @@ game.Players.PlayerRemoving:Connect(function(Player)
     local PlayerData = Player:FindFirstChild("Data"):WaitForChild("PlayerData").Value
 	
 	local success, err = pcall(function()
-		PlayerDataStore:SetAsync(Player,PlayerData)
+		PlayerDataStore:SetAsync(Player.UserId,Database.Pull(PlayerData))
 	end)
 	if success then
 		print("Player data saved.")
@@ -242,5 +243,5 @@ EraseData.OnServerEvent:Connect(function(Player)
 	PlayerTable[13]={{"StarterIsland"}}
 	PlayerTable[14]={{"StarterEgg"}}PlayerTable ]]
 	PlayerData.Value = Database.Convert(StarterDataSet)
-	PlayerDataStore:SetAsync(Player,PlayerData.Value)
+	PlayerDataStore:SetAsync(Player.UserId,StarterDataSet)
 end)
