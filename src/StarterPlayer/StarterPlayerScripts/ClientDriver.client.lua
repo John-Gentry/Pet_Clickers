@@ -328,7 +328,8 @@ spawn(function() -- Detect around Portals and Egg Shops
             if a < 10 then
                 local PlayerData = Data:FindFirstChild("PlayerData")
                 local JSON = Database.Pull(PlayerData.Value)
-                for i,x in pairs(JSON[13]) do
+                print(JSON[v:FindFirstChild("ExportCategory").Value])
+                for i,x in pairs(JSON[v:FindFirstChild("ExportCategory").Value]) do
                     if x == v:FindFirstChild("Export").Value then
                         v:FindFirstChild("BillboardGui").CoinText.Text = "Owned!"
                         purchased = true
@@ -337,15 +338,19 @@ spawn(function() -- Detect around Portals and Egg Shops
                 if UserInputService:IsKeyDown(Enum.KeyCode.E) then
                     print("pressed e")
                     if purchased then
-                        JSON[15] = v:FindFirstChild("Export").Value
+                        --JSON[v:FindFirstChild("ExportCategory").Value] = v:FindFirstChild("Export").Value
                         PlayerData.Value = Database.Convert(JSON)
-                        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
                         PlayerPayload:FireServer(PlayerData.Value)
+                        if v:FindFirstChild("Type").Value == "Portal" then
+                            Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
+                        end
                     else
-                        if CheckPurchase:InvokeServer(9,300, true,13,v:FindFirstChild("Export").Value) then
+                        if CheckPurchase:InvokeServer(9,300, true,v:FindFirstChild("ExportCategory").Value,v:FindFirstChild("Export").Value) then
                             print("purchased!")
                             PlayerPayload:FireServer(PlayerData.Value)
-                            Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
+                            if v:FindFirstChild("Type").Value == "Portal" then
+                                Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
+                            end
                         end
                     end
                 end

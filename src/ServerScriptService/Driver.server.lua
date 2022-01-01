@@ -128,10 +128,12 @@ CheckPurchase.OnServerInvoke=function(Player,type,amount,deduction, type2, paylo
                 if type2 == 13 then
                     PlayerData[type2][#PlayerData[type2]+1]=payload
                     PlayerData[15] = payload
-                end
-                if type2 == 4 then
+                elseif type2 == 4 then
                     PlayerData[type2][#PlayerData[type2]+1]=payload
                     --PlayerData[6] = payload
+                elseif type2 == 14 then
+                    PlayerData[type2][#PlayerData[type2]+1]=payload
+                    PlayerData[11] = payload
                 end
             end
             Player:FindFirstChild("Data").PlayerData.Value = Database.Convert(PlayerData)

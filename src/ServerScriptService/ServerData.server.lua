@@ -122,10 +122,10 @@ game.Players.PlayerAdded:Connect(function(Player)
 		if #PlayerDataStore == #StarterDataSet then
 			--PlayerDataStore=Database.Convert(PlayerDataStore)
 			if PlayerDataStore[13][1] ~= "StarterIsland" then
-				PlayerDataStore[13][1] = "StarterIsland"
+				PlayerDataStore[13] = {[1] = "StarterIsland"}
 			end
 			if PlayerDataStore[14][1] ~= "StarterEgg" then
-				PlayerDataStore[14][1] = "StarterEgg"
+				PlayerDataStore[14] = {[1] = "StarterEgg"}
 			end
 			PlayerData.Value = Database.Convert(PlayerDataStore)
 			print(PlayerDataStore)
@@ -187,8 +187,8 @@ LevelUp.OnServerEvent:Connect(function(Player,CurrentPet,Data)
     local XP = tonumber(PlayerTable[1])
     local GoalXP = tonumber(PlayerTable[2])
 	local Level = tonumber(PlayerTable[3])
-
-	local NumberOfCoinsEarned = math. floor(math.random()*10+5 + 0.5)
+	local CoinMinimum = ReplicatedStorage:WaitForChild("Eggs"):FindFirstChild(PlayerTable[11]).Head:FindFirstChild("MinimumEarned")
+	local NumberOfCoinsEarned = math. floor(math.random()*CoinMinimum.Value+5 + 0.5)
 	local NumberOfGemsEarned = (1 or 0)
 
 	PlayerTable[1]=0
@@ -197,7 +197,6 @@ LevelUp.OnServerEvent:Connect(function(Player,CurrentPet,Data)
 
 	PlayerTable[9] = PlayerTable[9] + NumberOfCoinsEarned
 	PlayerTable[12] = PlayerTable[12] + NumberOfGemsEarned
-	
 	RewardPrompt:FireClient(Player,"CoinDisplay",NumberOfCoinsEarned)
 	RewardPrompt:FireClient(Player,"GemDisplay",NumberOfGemsEarned)
 
