@@ -36,13 +36,11 @@ local StarterDataSet =   {
 	[10] = "", -- Last reward given (Will contain a time/date)
 	[11] = "StarterEgg", -- Current egg open
 	[12] = 10, -- Gems
-	[13] =  { -- List of islands unlocked (Player will default spawn at highest unlocked) (StarterIsland, Mystic Jungle)
+	[13] =  { -- List of islands unlocked (Player will default spawn at highest unlocked) (StarterIsland, Mystic Jungle, Lost Sands)
 		[1] = "StarterIsland"
-	   }
 	},
 	[14] =  { -- List of eggs unlocked
 		[1] = "StarterEgg"
-	   }
 	},
 	[15] = "StarterIsland" -- Current map open
  }
@@ -123,6 +121,12 @@ game.Players.PlayerAdded:Connect(function(Player)
 		print("Player datastore contains "..tostring(#Database.Pull(PlayerDataStore)).." values")
 		if #PlayerDataStore == #StarterDataSet then
 			--PlayerDataStore=Database.Convert(PlayerDataStore)
+			if PlayerDataStore[13][1] ~= "StarterIsland" then
+				PlayerDataStore[13][1] = "StarterIsland"
+			end
+			if PlayerDataStore[14][1] ~= "StarterEgg" then
+				PlayerDataStore[14][1] = "StarterEgg"
+			end
 			PlayerData.Value = Database.Convert(PlayerDataStore)
 			print(PlayerDataStore)
 		elseif #PlayerDataStore < #StarterDataSet then

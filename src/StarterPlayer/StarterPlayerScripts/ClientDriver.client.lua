@@ -60,12 +60,7 @@ game:GetService("StarterGui"):SetCore("ResetButtonCallback", false) -- turns off
 function SpawnToCurrentMap()
     local PlayerData = Data:WaitForChild("PlayerData")
     local JSON = Database.Pull(PlayerData.Value)
-    
-    if JSON[15] == "StarterIsland" then
-        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("StarterTeleport").CFrame
-    elseif JSON[15] == "Mystic Jungle" then
-        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("JungleTeleport").CFrame
-    end
+    Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(JSON[15]).CFrame
     local CurrentPet = Player:WaitForChild("Data"):WaitForChild("CurrentPet")
     TriggerPlayerPet:FireServer(CurrentPet.Value)
 end
@@ -339,16 +334,16 @@ spawn(function() -- Detect around Portals and Egg Shops
                 if UserInputService:IsKeyDown(Enum.KeyCode.E) then
                     print("pressed e")
                     if purchased then
-                        print(purchased)
+                        JSON[15] = v:FindFirstChild("Export").Value
+                        PlayerData.Value = Database.Convert(JSON)
+                        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
+                        PlayerPayload:FireServer(PlayerData.Value)
+                    else
                         if CheckPurchase:InvokeServer(9,300, true,13,v:FindFirstChild("Export").Value) then
                             print("purchased!")
-
                             PlayerPayload:FireServer(PlayerData.Value)
                             Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
-                        else
-                            Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
                         end
-                    
                     end
                 end
             else
