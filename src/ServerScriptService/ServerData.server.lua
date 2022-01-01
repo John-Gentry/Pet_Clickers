@@ -169,9 +169,9 @@ function isInTable(tableValue, toFind)
 end
 
 function GivePets(Level,Player)
-	local pet = PetConfig.DeterminePet()
 	local PlayerData = Player:FindFirstChild("Data"):WaitForChild("PlayerData")
 	local PlayerTable = Database.Pull(PlayerData.Value)
+	local pet = PetConfig.DeterminePet(PlayerTable[11])
 	if isInTable(PlayerTable[4],pet) == false then
 		table.insert(PlayerTable[4],pet)
 	end

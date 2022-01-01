@@ -23,9 +23,9 @@ function selectpet(list)
 end
 
 --[[ Rarity ratios for each of the pets *]]
-function PetConfig.DeterminePet()
+function PetConfig.DeterminePet(EggType) --["Dog","Rabbit","Dalmatian","Penguin","Koala"]
     local percentages = {
-        {Name = "Dog", Percentage = 0.4},
+        {Name = "Dog", Percentage = 0.4}, --[0.4,0.4,0.05,0.1,0.1]
         {Name = "Rabbit", Percentage = 0.4},
         {Name = "Dalmatian", Percentage = 0.05},
         {Name = "Penguin", Percentage = 0.1},
