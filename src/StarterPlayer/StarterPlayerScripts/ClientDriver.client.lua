@@ -78,7 +78,7 @@ spawn(function() -- Detect around daily reward
         local HRP = Character:WaitForChild("HumanoidRootPart")
         local a = (Vector3.new(-221.464, -359.67, -291.814) - HRP.Position).Magnitude
         local b = (Vector3.new(-264.543, -363.198, -239.735) - HRP.Position).Magnitude
-        print(b)
+        --print(b)
         if a < 10 then
             print("true")
         elseif b < 10 then

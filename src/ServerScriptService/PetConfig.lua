@@ -1,8 +1,10 @@
 --[[
     This script handles anything related to the pet
 ]]
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local Database = require(ReplicatedStorage.Modules.Data)
 PetConfig = {}
 
 function selectpet(list)
@@ -24,14 +26,17 @@ end
 
 --[[ Rarity ratios for each of the pets *]]
 function PetConfig.DeterminePet(EggType) --["Dog","Rabbit","Dalmatian","Penguin","Koala"]
-    local percentages = {
-        {Name = "Dog", Percentage = 0.4}, --[0.4,0.4,0.05,0.1,0.1]
-        {Name = "Rabbit", Percentage = 0.4},
-        {Name = "Dalmatian", Percentage = 0.05},
-        {Name = "Penguin", Percentage = 0.1},
-        {Name = "Koala", Percentage = 0.1}
-    }
-    selection = selectpet(percentages)
+    --print(EggType)
+    local Eggs = ReplicatedStorage:WaitForChild("Eggs")
+    local Egg = Eggs:FindFirstChild(EggType)
+    local PetList = Database.Pull(Egg.Head:FindFirstChild("Rewards").Value)
+    local ChanceList = Database.Pull(Egg.Head:FindFirstChild("Chances").Value)
+    local percent = {}
+    for i,v in pairs(PetList) do
+        table.insert(percent,{Name = v, Percentage = ChanceList[i]})
+    end
+    print(percent)
+    selection = selectpet(percent)
     return selection["Name"]
 end
 

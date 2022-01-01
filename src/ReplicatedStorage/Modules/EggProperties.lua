@@ -45,7 +45,7 @@ function EggProperties.HitEgg()
     if game.Players.LocalPlayer.Data.Toggle.Value == false then
         game.Players.LocalPlayer.Data.Toggle.Value = true
         local Egg = ClientObjects:FindFirstChild(JSON[11])
-        print(Egg)
+        --print(Egg)
         if Egg ~= nil then
             Egg:WaitForChild("Head").CFrame = SpawnEggLocation
             local Pos = Egg:FindFirstChild("Head").CFrame
