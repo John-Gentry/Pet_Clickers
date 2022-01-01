@@ -14,7 +14,7 @@ local LastDataStoreValue = 14
 
 local PetConfig = require(script.Parent.PetConfig)
 Database = require(ReplicatedStorage.Modules.Data)
-
+--[[ My userID is 86018803 ]]
 local StarterDataSet =   {
 	[1] = 0, -- XP value
 	[2] = 1000, -- Maximum XP value
@@ -37,13 +37,11 @@ local StarterDataSet =   {
 	[11] = "StarterEgg", -- Current egg open
 	[12] = 10, -- Gems
 	[13] =  { -- List of islands unlocked (Player will default spawn at highest unlocked) (StarterIsland, Mystic Jungle)
-	   [1] =  {
-		  [1] = "StarterIsland"
+		[1] = "StarterIsland"
 	   }
 	},
 	[14] =  { -- List of eggs unlocked
-	   [1] =  {
-		  [1] = "StarterEgg"
+		[1] = "StarterEgg"
 	   }
 	},
 	[15] = "StarterIsland" -- Current map open

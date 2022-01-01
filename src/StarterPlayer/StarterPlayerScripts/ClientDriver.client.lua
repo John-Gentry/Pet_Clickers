@@ -273,57 +273,6 @@ MainGui.ResetStatsButton.MouseButton1Click:Connect(function()
     EraseData:FireServer()
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-    local PlayerData = Data:FindFirstChild("PlayerData")
-	if Mouse.Target then
-		if Mouse.Target.Name == "DoorPart1" then -- ReturnStarter
-            local purchased = false
-			game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").Enabled = true
-            local JSON = Database.Pull(PlayerData.Value)
-            for i,v in pairs(JSON[13]) do
-                if v == "Mystic Jungle" then
-                    purchased = true
-                end
-            end
-            if purchased then
-                game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").CoinText.Text = "Owned!"
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.E) then
-                print("pressed e")
-                if not purchased then
-                    if CheckPurchase:InvokeServer(9,300, true,13,"Mystic Jungle") then
-                        print("purchased!")
-
-                        PlayerPayload:FireServer(PlayerData.Value)
-                        Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("JungleTeleport").CFrame
-                    end
-                else
-                    local JSON = Database.Pull(PlayerData.Value)
-                    JSON[15] = "Mystic Jungle"
-                    PlayerData.Value = Database.Convert(JSON)
-                    PlayerPayload:FireServer(PlayerData.Value)
-                    Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("JungleTeleport").CFrame
-                end
-            end
-        elseif Mouse.Target.Name == "ReturnStarter" then
-            local Current = Mouse.Target
-            Current:FindFirstChild("BillboardGui").Enabled = true
-            if UserInputService:IsKeyDown(Enum.KeyCode.E) then
-                local JSON = Database.Pull(PlayerData.Value)
-                JSON[15] = "StarterIsland"
-                PlayerData.Value = Database.Convert(JSON)
-                PlayerPayload:FireServer(PlayerData.Value)
-                Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild("StarterTeleport").CFrame
-
-            end
-            wait(2)
-            Current:FindFirstChild("BillboardGui").Enabled = false
-
-		else
-			game.Workspace:FindFirstChild("Entrance1").door.DoorPart1:FindFirstChild("BillboardGui").Enabled = false
-		end
-	end
-end)
 
 --[[ Below is for the shop handling ]]
 Shop.MainFrame.ScrollingFrame.Product1.BuyButton.MouseButton1Click:Connect(function() --[[ 100 coins, 50 robux, 1231214711]]
@@ -368,3 +317,43 @@ petframe.Product2.BuyButton.MouseButton1Click:Connect(function() PetShopPurchase
 petframe.Product3.BuyButton.MouseButton1Click:Connect(function() PetShopPurchase("Angel",500,petframe.Product3.BuyButton)end)
 
 --petframe.Product1.BuyButton.TouchTap:Connect(function() print("working") PetShopPurchase("Werewolf",50,petframe.Product1.BuyButton)end)
+
+--[[ Below is for Portal and Egg shop handling ]]
+
+spawn(function() -- Detect around Portals and Egg Shops
+    while wait(0.1) do
+        
+        for i, v in pairs(game.Workspace:WaitForChild("PurchaseObjects"):GetChildren()) do
+            local HRP = Character:WaitForChild("HumanoidRootPart")
+            local a = (v.Position - HRP.Position).Magnitude
+            local purchased = false
+            if a < 10 then
+                local PlayerData = Data:FindFirstChild("PlayerData")
+                local JSON = Database.Pull(PlayerData.Value)
+                for i,x in pairs(JSON[13]) do
+                    if x == v:FindFirstChild("Export").Value then
+                        v:FindFirstChild("BillboardGui").CoinText.Text = "Owned!"
+                        purchased = true
+                    end
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.E) then
+                    print("pressed e")
+                    if purchased then
+                        print(purchased)
+                        if CheckPurchase:InvokeServer(9,300, true,13,v:FindFirstChild("Export").Value) then
+                            print("purchased!")
+
+                            PlayerPayload:FireServer(PlayerData.Value)
+                            Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
+                        else
+                            Character:WaitForChild("HumanoidRootPart").CFrame = game.Workspace:FindFirstChild(v:FindFirstChild("Export").Value).CFrame
+                        end
+                    
+                    end
+                end
+            else
+                PlayerGui:WaitForChild("PetShop").Enabled = false
+            end
+        end
+    end
+end)
