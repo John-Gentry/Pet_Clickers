@@ -113,6 +113,7 @@ local function processReceipt(receiptInfo)
  
 	-- Record transaction in data store so it isn't granted again
 	local success, errorMessage = pcall(function()
+		print("saving transaction")
 		purchaseHistoryStore:SetAsync(playerProductKey, true)
 	end)
 	if not success then
@@ -125,3 +126,16 @@ end
  
 -- Set the callback; this can only be done once by one script on the server! 
 MarketplaceService.ProcessReceipt = processReceipt
+
+--[[ PlayerTransaction = {
+	PlayerId = 86018803
+
+} ]]
+
+--[[ function MarketplaceService.ProcessReceipt(receiptInfo)
+    local playerProductKey = receiptInfo.PlayerId .. "_" .. receiptInfo.PurchaseId
+    local productId = receiptInfo.ProductId
+end
+ ]]
+
+
