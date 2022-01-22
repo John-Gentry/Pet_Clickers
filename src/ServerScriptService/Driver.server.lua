@@ -68,6 +68,7 @@ end)
 Data.OnServerEvent:Connect(function(Player,Data) -- Severe security bug, temp patch
     --print("Payload complete")
     Player:WaitForChild("Data").PlayerData.Value = Data
+    print(Data)
 end)
 
 RemovePetInGame.OnServerEvent:Connect(function(Player,PetName)

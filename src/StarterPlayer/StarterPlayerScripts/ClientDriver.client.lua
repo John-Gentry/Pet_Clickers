@@ -35,6 +35,7 @@ local MainGui = PlayerGui:WaitForChild("MainGui")
 local Shop = PlayerGui:WaitForChild("Shop")
 local PetShop = PlayerGui:WaitForChild("PetShop")
 local Equip = PlayerGui:WaitForChild("Inventory").InventoryFrame.PetHolder.Equip
+local Codes = PlayerGui:WaitForChild("Codes")
 
 local XPText = MainGui.Level.XPBarBackground.TextLabel
 --local LevelText = MainGui.Level.BoosterButton
@@ -353,6 +354,62 @@ spawn(function() -- Detect around Portals and Egg Shops
                             end
                         end
                     end
+                end
+            end
+        end
+    end
+end)
+
+--[[ Codes handling ]]
+local CodeFrame = Codes.Frame.CodeFrame
+local CodeList = {
+    [1] = {
+        "FREEPET",
+        "Dog"
+    },
+    [2] = {
+        "FREE2022PET",
+        "2022 Dog"
+    }
+}
+print(MainGui.CodeButton)
+MainGui.CodeButton.MouseButton1Click:Connect(function()
+    if Codes.Enabled then 
+        Codes.Enabled = false
+    else
+        print("enabled")
+        Codes.Enabled = true
+    end
+end)
+
+CodeFrame.Redeem.MouseButton1Click:Connect(function()
+    local found = false
+    local PlayerData = Data:FindFirstChild("PlayerData")
+    local JSON = Database.Pull(PlayerData.Value)
+    for i,a in pairs(CodeList) do
+        for i,b in pairs(a) do
+            if a[1] == CodeFrame.EnterCode.Text then
+                for i,c in pairs(JSON[4]) do
+                    if c == a[2] then
+                        print("Already redeemed!")
+                        found = true
+                    end
+                end
+                if not found then
+                    spawn(function()
+                        CodeFrame.Description.Text = "Redeemed!"
+                        wait(2)
+                        CodeFrame.Description.Text = "Follow us on social media for more codes!"
+                    end)
+                    print(JSON[4])
+                    print(a[2])
+                    table.insert(JSON[4],a[2])
+                    PlayerData.Value = Database.Convert(JSON)
+                    PlayerPayload:FireServer(PlayerData.Value)
+                else
+                    CodeFrame.Description.Text = "Already Redeemed!"
+                    wait(2)
+                    CodeFrame.Description.Text = "Follow us on social media for more codes!"
                 end
             end
         end
