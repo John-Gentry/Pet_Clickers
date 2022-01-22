@@ -35,7 +35,7 @@ function InventoryHandler.ViewPet(pet,viewportFrame) -- Change the name of this 
     end
 end
 
-function InventoryHandler.CheckChanges()
+function InventoryHandler.CheckChanges() --[[ Handles inventory ]]
     spawn(function()
         local Inventory = Player.PlayerGui:WaitForChild("Inventory")
 
